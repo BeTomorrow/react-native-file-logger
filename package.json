@@ -1,0 +1,45 @@
+{
+	"name": "react-native-file-logger",
+	"title": "React Native File Logger",
+	"version": "1.0.0",
+	"description": "TODO",
+	"main": "dist/index.js",
+	"files": [
+		"README.md",
+		"android",
+		"ios",
+		"dist",
+		"react-native-file-logger.podspec"
+	],
+	"scripts": {
+		"build": "rimraf dist && tsc",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/github_account/react-native-file-logger.git",
+		"baseUrl": "https://github.com/github_account/react-native-file-logger"
+	},
+	"keywords": [
+		"react-native"
+	],
+	"author": {
+		"name": "BeTomorrow",
+		"email": "streny@betomorrow.com"
+	},
+	"license": "MIT",
+	"licenseFilename": "LICENSE",
+	"readmeFilename": "README.md",
+	"peerDependencies": {
+		"react": "^16.8.1",
+		"react-native": ">=0.60.0-rc.0 <1.0.x"
+	},
+	"devDependencies": {
+		"@types/react-native": "^0.62.18",
+		"prettier": "^2.0.5",
+		"react": "^16.9.0",
+		"react-native": "^0.61.5",
+		"rimraf": "^3.0.2",
+		"typescript": "^3.9.6"
+	}
+}
