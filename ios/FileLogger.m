@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    NSNumber* rollingFrequency = options[@"rollingFrequency"];
+    NSNumber* dailyRolling = options[@"dailyRolling"];
     NSNumber* maximumFileSize = options[@"maximumFileSize"];
     NSNumber* maximumNumberOfFiles = options[@"maximumNumberOfFiles"];
     NSString* logsDirectory = options[@"logsDirectory"];
@@ -28,7 +28,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
     
     DDFileLogger* fileLogger = [[DDFileLogger alloc] initWithLogFileManager:fileManager];
-    fileLogger.rollingFrequency = [rollingFrequency doubleValue];
+    fileLogger.rollingFrequency = [dailyRolling boolValue] ? 24 * 60 * 60 : 0;
     fileLogger.maximumFileSize = [maximumFileSize unsignedIntegerValue];
     [DDLog addLogger:fileLogger];
     self.fileLogger = fileLogger;

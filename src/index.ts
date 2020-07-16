@@ -13,7 +13,7 @@ export enum LogLevel {
 
 export interface ConfigureOptions {
 	logLevel?: LogLevel;
-	rollingFrequency?: number;
+	dailyRolling?: boolean;
 	maximumFileSize?: number;
 	maximumNumberOfFiles?: number;
 	logsDirectory?: string;
@@ -31,7 +31,7 @@ class FileLoggerStatic {
 	configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
 			logLevel = LogLevel.Debug,
-			rollingFrequency = 24 * 60 * 60,
+			dailyRolling = true,
 			maximumFileSize = 1024 * 1024,
 			maximumNumberOfFiles = 5,
 			logsDirectory,
@@ -41,7 +41,7 @@ class FileLoggerStatic {
 		this.enable();
 
 		return RNFileLogger.configure({
-			rollingFrequency,
+			dailyRolling,
 			maximumFileSize,
 			maximumNumberOfFiles,
 			logsDirectory,

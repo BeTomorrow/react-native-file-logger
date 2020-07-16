@@ -41,18 +41,28 @@ export const App = () => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.buttonContainer}>
-				<Button title="Log info" onPress={() => console.log("Log info", { nested: { data: 123 } })} />
-				<Button title="Log warning" onPress={() => console.warn("Log warning", { nested: { data: 456 } })} />
-				<Button title="Change log level" onPress={changeLogLevel} />
-				<Button title="Show file paths" onPress={showLogFilePaths} />
-				<Button title="Send files by email" onPress={sendLogFilesByEmail} />
+				<View style={styles.button}>
+					<Button title="Log info" onPress={() => console.log("Log info", { nested: { data: 123 } })} />
+				</View>
+				<View style={styles.button}>
+					<Button title="Log warning" onPress={() => console.warn("Log warning", { nested: { data: 456 } })} />
+				</View>
+				<View style={styles.button}>
+					<Button title="Change log level" onPress={changeLogLevel} />
+				</View>
+				<View style={styles.button}>
+					<Button title="Show file paths" onPress={showLogFilePaths} />
+				</View>
+				<View style={styles.button}>
+					<Button title="Send files by email" onPress={sendLogFilesByEmail} />
+				</View>
 			</View>
 			<View style={styles.settingsRow}>
 				<Text style={styles.settingsLabel}>Enabled</Text>
 				<Switch value={enabled} onValueChange={changeEnabled} />
 			</View>
 			<View style={styles.settingsRow}>
-				<Text style={styles.settingsLabel}>Log level</Text>
+				<Text style={styles.settingsLabel}>Log Level</Text>
 				<Text style={styles.settingsValue}>{LogLevel[logLevel]}</Text>
 			</View>
 		</View>
@@ -68,7 +78,9 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		flex: 1,
 		justifyContent: "center",
-		alignItems: "center",
+	},
+	button: {
+		marginVertical: 6,
 	},
 	settingsRow: {
 		paddingHorizontal: 16,
