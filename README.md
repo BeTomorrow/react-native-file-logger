@@ -9,9 +9,7 @@
 `$ react-native link react-native-file-logger`
 
 ## Usage
-```javascript
-import FileLogger from 'react-native-file-logger';
 
-// TODO: What to do with the module?
-FileLogger;
+```javascript
+import { FileLogger } from "react-native-file-logger";
 ```
