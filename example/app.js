@@ -30,7 +30,13 @@ export const App = () => {
 		setLogLevel(nextLogLevel);
 	};
 
-	const sendLogFilesByEmail = () => {};
+	const sendLogFilesByEmail = () => {
+		FileLogger.sendLogFilesByEmail({
+			to: "john@doe.com",
+			subject: "Log files",
+			body: "Please find attached the log files from your app",
+		});
+	};
 
 	return (
 		<View style={styles.container}>
@@ -47,7 +53,7 @@ export const App = () => {
 			</View>
 			<View style={styles.settingsRow}>
 				<Text style={styles.settingsLabel}>Log level</Text>
-				<Text>{LogLevel[logLevel]}</Text>
+				<Text style={styles.settingsValue}>{LogLevel[logLevel]}</Text>
 			</View>
 		</View>
 	);
@@ -77,6 +83,9 @@ const styles = StyleSheet.create({
 	settingsLabel: {
 		flex: 1,
 		fontWeight: "500",
-		marginRight: 16,
+		color: "black",
+	},
+	settingsValue: {
+		color: "black",
 	},
 });

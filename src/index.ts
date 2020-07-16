@@ -19,17 +19,23 @@ export interface ConfigureOptions {
 	logsDirectory?: string;
 }
 
+export interface SendByEmailOptions {
+	to?: string;
+	subject?: string;
+	body?: string;
+}
+
 class FileLoggerStatic {
 	private _logLevel = LogLevel.Debug;
 
-	configure(options?: ConfigureOptions): Promise<void> {
+	configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
 			logLevel = LogLevel.Debug,
 			rollingFrequency = 24 * 60 * 60,
 			maximumFileSize = 1024 * 1024,
 			maximumNumberOfFiles = 5,
 			logsDirectory,
-		} = options ?? {};
+		} = options;
 
 		this.setLogLevel(logLevel);
 		this.enable();
@@ -62,6 +68,10 @@ class FileLoggerStatic {
 
 	getLogFilePaths(): Promise<string[]> {
 		return RNFileLogger.getLogFilePaths();
+	}
+
+	sendLogFilesByEmail(options: SendByEmailOptions = {}): Promise<void> {
+		return RNFileLogger.sendLogFilesByEmail(options);
 	}
 
 	private _handleLog = (level: string, str: string) => {
