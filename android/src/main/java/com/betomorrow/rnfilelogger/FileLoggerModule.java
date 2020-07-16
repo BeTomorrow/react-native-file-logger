@@ -21,6 +21,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.RollingPolicy;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
@@ -60,29 +61,34 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         rollingFileAppender.setAppend(true);
         rollingFileAppender.setFile(logsDirectory + "/" + logPrefix + "-latest.log");
 
+        RollingPolicy rollingPolicy;
         if (dailyRolling) {
             SizeAndTimeBasedFNATP<ILoggingEvent> fileNamingPolicy = new SizeAndTimeBasedFNATP<>();
             fileNamingPolicy.setContext(loggerContext);
             fileNamingPolicy.setMaxFileSize(new FileSize(maximumFileSize));
 
-            TimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new TimeBasedRollingPolicy<>();
-            rollingPolicy.setContext(loggerContext);
-            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
-            rollingPolicy.setMaxHistory(maximumNumberOfFiles);
-            rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(fileNamingPolicy);
-            rollingPolicy.setParent(rollingFileAppender);
-            rollingPolicy.start();
+            TimeBasedRollingPolicy<ILoggingEvent> tbRollingPolicy = new TimeBasedRollingPolicy<>();
+            tbRollingPolicy.setContext(loggerContext);
+            tbRollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
+            tbRollingPolicy.setMaxHistory(maximumNumberOfFiles);
+            tbRollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(fileNamingPolicy);
+            tbRollingPolicy.setParent(rollingFileAppender);
+            tbRollingPolicy.start();
+
+            rollingPolicy = tbRollingPolicy;
         } else {
             SizeBasedTriggeringPolicy triggeringPolicy = new SizeBasedTriggeringPolicy();
             triggeringPolicy.setContext(loggerContext);
             triggeringPolicy.setMaxFileSize(new FileSize(maximumFileSize > 0 ? maximumFileSize : Long.MAX_VALUE));
 
-            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-            rollingPolicy.setContext(loggerContext);
-            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
-            rollingPolicy.setMinIndex(1);
-            rollingPolicy.setMaxIndex(maximumNumberOfFiles);
-            rollingPolicy.start();
+            FixedWindowRollingPolicy fwRollingPolicy = new FixedWindowRollingPolicy();
+            fwRollingPolicy.setContext(loggerContext);
+            fwRollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
+            fwRollingPolicy.setMinIndex(1);
+            fwRollingPolicy.setMaxIndex(maximumNumberOfFiles);
+            fwRollingPolicy.start();
+
+            rollingPolicy = fwRollingPolicy;
         }
 
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
