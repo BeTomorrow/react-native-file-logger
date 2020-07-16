@@ -48,7 +48,7 @@ RCT_EXPORT_METHOD(error:(NSString*)str) {
     DDLogError(@"%@", str);
 }
 
-RCT_EXPORT_METHOD(getLogFiles:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getLogFilePaths:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(self.fileLogger.logFileManager.sortedLogFilePaths);
 }
 
