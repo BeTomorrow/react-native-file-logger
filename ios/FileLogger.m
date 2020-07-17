@@ -3,6 +3,7 @@
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <MessageUI/MessageUI.h>
+#import "FileLoggerFormatter.h"
 
 static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
@@ -28,6 +29,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
     
     DDFileLogger* fileLogger = [[DDFileLogger alloc] initWithLogFileManager:fileManager];
+    fileLogger.logFormatter = [[FileLoggerFormatter alloc] init];
     fileLogger.rollingFrequency = [dailyRolling boolValue] ? 24 * 60 * 60 : 0;
     fileLogger.maximumFileSize = [maximumFileSize unsignedIntegerValue];
     [DDLog addLogger:fileLogger];
@@ -66,12 +68,6 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
        return;
     }
     
-    NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
-    if (logFiles.count == 0) {
-        reject(@"NoLogFiles", @"No log files to send by email", nil);
-        return;
-    }
-    
     MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
     composeViewController.mailComposeDelegate = self;
     if (to) {
@@ -84,6 +80,7 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
         [composeViewController setMessageBody:body isHTML:NO];
     }
     
+    NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
     for (NSString* logFile in logFiles) {
         NSData* data = [NSData dataWithContentsOfFile:logFile];
         [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
