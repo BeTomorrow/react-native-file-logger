@@ -58,6 +58,17 @@ RCT_EXPORT_METHOD(getLogFilePaths:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
     resolve(self.fileLogger.logFileManager.sortedLogFilePaths);
 }
 
+RCT_EXPORT_METHOD(deleteLogFiles:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.fileLogger rollLogFileWithCompletionBlock:^{
+        for (DDLogFileInfo* logFileInfo in [self.fileLogger.logFileManager unsortedLogFileInfos]) {
+            if (logFileInfo.isArchived) {
+                [[NSFileManager defaultManager] removeItemAtPath:logFileInfo.filePath error:nil];
+            }
+        }
+        resolve(nil);
+    }];
+}
+
 RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSString* to = options[@"to"];
     NSString* subject = options[@"subject"];

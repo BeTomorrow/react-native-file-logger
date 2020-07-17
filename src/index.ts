@@ -70,6 +70,10 @@ class FileLoggerStatic {
 		return RNFileLogger.getLogFilePaths();
 	}
 
+	deleteLogFiles(): Promise<void> {
+		return RNFileLogger.deleteLogFiles();
+	}
+
 	sendLogFilesByEmail(options: SendByEmailOptions = {}): Promise<void> {
 		return RNFileLogger.sendLogFilesByEmail(options);
 	}

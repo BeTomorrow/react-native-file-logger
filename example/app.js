@@ -38,6 +38,11 @@ export const App = () => {
 		});
 	};
 
+	const deleteLogFiles = async () => {
+		FileLogger.deleteLogFiles();
+		Alert.alert("Log files deleted");
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.buttonContainer}>
@@ -55,6 +60,9 @@ export const App = () => {
 				</View>
 				<View style={styles.button}>
 					<Button title="Send files by email" onPress={sendLogFilesByEmail} />
+				</View>
+				<View style={styles.button}>
+					<Button title="Delete files" onPress={deleteLogFiles} />
 				</View>
 			</View>
 			<View style={styles.settingsRow}>
