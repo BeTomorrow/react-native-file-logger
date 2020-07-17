@@ -1,5 +1,8 @@
 package com.betomorrow.rnfilelogger;
 
+import android.content.Intent;
+import android.net.Uri;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -21,10 +25,8 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.RollingPolicy;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
+import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
 
 public class FileLoggerModule extends ReactContextBaseJavaModule {
@@ -51,53 +53,49 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
         logsDirectory = options.hasKey("logsDirectory")
                 ? options.getString("logsDirectory")
-                : reactContext.getCacheDir() + "/logs";
+                : reactContext.getExternalCacheDir() + "/logs";
         String logPrefix = reactContext.getPackageName();
 
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         RollingFileAppender<ILoggingEvent> rollingFileAppender = new RollingFileAppender<>();
         rollingFileAppender.setContext(loggerContext);
-        rollingFileAppender.setAppend(true);
         rollingFileAppender.setFile(logsDirectory + "/" + logPrefix + "-latest.log");
 
-        RollingPolicy rollingPolicy;
         if (dailyRolling) {
-            SizeAndTimeBasedFNATP<ILoggingEvent> fileNamingPolicy = new SizeAndTimeBasedFNATP<>();
-            fileNamingPolicy.setContext(loggerContext);
-            fileNamingPolicy.setMaxFileSize(new FileSize(maximumFileSize));
+            SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
+            rollingPolicy.setContext(loggerContext);
+            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
+            rollingPolicy.setMaxFileSize(new FileSize(maximumFileSize));
+            rollingPolicy.setTotalSizeCap(new FileSize(maximumNumberOfFiles * maximumFileSize));
+            rollingPolicy.setMaxHistory(maximumNumberOfFiles);
+            rollingPolicy.setParent(rollingFileAppender);
+            rollingPolicy.start();
+            rollingFileAppender.setRollingPolicy(rollingPolicy);
 
-            TimeBasedRollingPolicy<ILoggingEvent> tbRollingPolicy = new TimeBasedRollingPolicy<>();
-            tbRollingPolicy.setContext(loggerContext);
-            tbRollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
-            tbRollingPolicy.setMaxHistory(maximumNumberOfFiles);
-            tbRollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(fileNamingPolicy);
-            tbRollingPolicy.setParent(rollingFileAppender);
-            tbRollingPolicy.start();
+        } else if (maximumFileSize > 0) {
+            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+            rollingPolicy.setContext(loggerContext);
+            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
+            rollingPolicy.setMinIndex(1);
+            rollingPolicy.setMaxIndex(maximumNumberOfFiles);
+            rollingPolicy.setParent(rollingFileAppender);
+            rollingPolicy.start();
+            rollingFileAppender.setRollingPolicy(rollingPolicy);
 
-            rollingPolicy = tbRollingPolicy;
-        } else {
             SizeBasedTriggeringPolicy triggeringPolicy = new SizeBasedTriggeringPolicy();
             triggeringPolicy.setContext(loggerContext);
-            triggeringPolicy.setMaxFileSize(new FileSize(maximumFileSize > 0 ? maximumFileSize : Long.MAX_VALUE));
-
-            FixedWindowRollingPolicy fwRollingPolicy = new FixedWindowRollingPolicy();
-            fwRollingPolicy.setContext(loggerContext);
-            fwRollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
-            fwRollingPolicy.setMinIndex(1);
-            fwRollingPolicy.setMaxIndex(maximumNumberOfFiles);
-            fwRollingPolicy.start();
-
-            rollingPolicy = fwRollingPolicy;
+            triggeringPolicy.setMaxFileSize(new FileSize(maximumFileSize));
+            triggeringPolicy.start();
+            rollingFileAppender.setTriggeringPolicy(triggeringPolicy);
         }
 
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         encoder.setCharset(Charset.forName("UTF-8"));
-        encoder.setPattern("%date %level %msg%n");
+        encoder.setPattern("%date [%level]  %msg%n");
         encoder.start();
 
-        rollingFileAppender.setRollingPolicy(rollingPolicy);
         rollingFileAppender.setEncoder(encoder);
         rollingFileAppender.start();
 
@@ -131,16 +129,8 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getLogFilePaths(Promise promise) {
         try {
-            File directory = new File(logsDirectory);
-            File[] logFiles = directory.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".log");
-                }
-            });
-
             WritableArray result = Arguments.createArray();
-            for (File logFile: logFiles) {
+            for (File logFile: getLogFiles()) {
                 result.pushString(logFile.getAbsolutePath());
             }
             promise.resolve(result);
@@ -151,6 +141,44 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void sendLogFilesByEmail(ReadableMap options, Promise promise) {
-        promise.resolve(null);
+        try {
+            String to = options.hasKey("to") ? options.getString("to") : null;
+            String subject = options.hasKey("subject") ? options.getString("subject") : null;
+            String body = options.hasKey("body") ? options.getString("body") : null;
+
+            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE, Uri.parse("mailto:"));
+            intent.setType("text/plain");
+
+            if (to != null) {
+                intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{to});
+            }
+            if (subject != null) {
+                intent.putExtra(Intent.EXTRA_SUBJECT, new String[]{subject});
+            }
+            if (body != null) {
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, new String[]{body});
+            }
+
+            ArrayList<Uri> uris = new ArrayList<>();
+            for (File file : getLogFiles()) {
+                uris.add(Uri.fromFile(file));
+            }
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            reactContext.startActivity(Intent.createChooser(intent, "Send Logs"));
+
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    private File[] getLogFiles() {
+        File directory = new File(logsDirectory);
+        return directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".log");
+            }
+        });
     }
 }
