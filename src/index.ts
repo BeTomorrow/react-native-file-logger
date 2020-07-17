@@ -28,7 +28,7 @@ export interface SendByEmailOptions {
 class FileLoggerStatic {
 	private _logLevel = LogLevel.Debug;
 
-	configure(options: ConfigureOptions = {}): Promise<void> {
+	async configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
 			logLevel = LogLevel.Debug,
 			dailyRolling = true,
@@ -37,15 +37,15 @@ class FileLoggerStatic {
 			logsDirectory,
 		} = options;
 
-		this.setLogLevel(logLevel);
-		this.enable();
-
-		return RNFileLogger.configure({
+		await RNFileLogger.configure({
 			dailyRolling,
 			maximumFileSize,
 			maximumNumberOfFiles,
 			logsDirectory,
 		});
+
+		this.setLogLevel(logLevel);
+		this.enable();
 	}
 
 	enable() {
