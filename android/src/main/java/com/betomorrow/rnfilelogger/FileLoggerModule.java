@@ -147,16 +147,15 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             String body = options.hasKey("body") ? options.getString("body") : null;
 
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE, Uri.parse("mailto:"));
-            intent.setType("text/plain");
-
+            
             if (to != null) {
-                intent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{to});
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
             }
             if (subject != null) {
-                intent.putExtra(Intent.EXTRA_SUBJECT, new String[]{subject});
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             }
             if (body != null) {
-                intent.putExtra(android.content.Intent.EXTRA_TEXT, new String[]{body});
+                intent.putExtra(Intent.EXTRA_TEXT, body);
             }
 
             ArrayList<Uri> uris = new ArrayList<>();
