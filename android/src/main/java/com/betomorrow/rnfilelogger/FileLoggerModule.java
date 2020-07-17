@@ -34,6 +34,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private String logsDirectory;
+    private ReadableMap configureOptions;
 
     public FileLoggerModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -101,8 +102,10 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.DEBUG);
+        root.detachAndStopAllAppenders();
         root.addAppender(rollingFileAppender);
 
+        configureOptions = options;
         promise.resolve(null);
     }
 
@@ -134,6 +137,22 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
                 result.pushString(logFile.getAbsolutePath());
             }
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteLogFiles(Promise promise) {
+        try {
+            for (File file: getLogFiles()) {
+                file.delete();
+            }
+            if (configureOptions != null) {
+                configure(configureOptions, promise);
+            } else {
+                promise.resolve(null);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
