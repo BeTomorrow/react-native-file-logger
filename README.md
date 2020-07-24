@@ -5,7 +5,7 @@ _A simple file-logger for React Native with configurable rolling policy, based o
 ## Features
 * **💆‍♂️ Easy to setup**: Just call `FileLogger.configure()` and you're done. All your existing `console.log/debug/...` calls are automatically logged into a file
 * **🌀 File rolling**: Support for time and size-based file rolling. Max number of files and size-limit can be configured. File rolling can also be disabled.
-* **📬 Email support**: Logging into a file is useless if users cannot send logs back to developers. With react-native-file-logger, file logs can be send by email without having to rely on another library
+* **📬 Email support**: Logging into a file is useless if users cannot send logs back to developers. With react-native-file-logger, file logs can be sent by email without having to rely on another library
 * **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings
 
 ## How it works
@@ -26,7 +26,52 @@ import { FileLogger } from "react-native-file-logger";
 FileLogger.configure();
 ```
 
-This is all you need to add file-logging to your app. `FileLogger.configure()` can take options to customize the rolling policy, log directory path or log-level.
+This is all you need to add file-logging to your app. `FileLogger.configure()` also takes options to customize the rolling policy, log directory path or log-level.
 
 ## API
 
+#### FileLogger.configure(options?): Promise
+
+Initialize the file-logger with the specified options. As soon as the returned promise is resolved, all `console` calls are appended to the log file. To ensure that no logs are missing, it is good practice to `await` this call at the launch of your app.
+
+| Option | Description | Default |
+| --- | --- | --- |
+| `logLevel` | Minimum log-level for file output (it won't affect console output) | LogLevel.Debug |
+| `dailyRolling` | If `true`, a new log file is created every day | `true` |
+| `maximumFileSize` | A new log file is created when current log file exceeds the given size in bytes. `0` to disable | `1024 * 1024` (1MB) |
+| `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable | `5` |
+| `logsDirectory` | Absolute path of directory where log files are stored. If not defined, log files are stored in the cache directory of the app | `undefined` |
+
+#### FileLogger.sendLogFilesByEmail(options?): Promise
+
+Send all log files by email. On iOS, it uses `MFMailComposeViewController` to ensure that the user won't leave the app when sending log files.
+
+| Option | Description |
+| --- | --- |
+| `to` | Email address of the recipient |
+| `subject` | Email subject |
+| `body` | Plain text body message of the email |
+
+#### FileLogger.enable()
+
+Enable file-logging. It is already enabled by `FileLogger.configure()` so you only to call it if you've previously called `FileLogger.disable()`.
+
+#### FileLogger.disable()
+
+Disable file-logging. `console` calls will no longer be appended to log file.
+
+#### FileLogger.setLogLevel(logLevel)
+
+Change the minimum log-level for file-output. The initial log-level can be passed as an option to `FileLogger.configure()`.
+
+#### FileLogger.getLogLevel(): LogLevel
+
+Return the current log-level.
+
+#### FileLogger.getLogFilePaths(): Promise<string[]>
+
+Returns a promise with the absolute paths to the log files.
+
+#### FileLogger.deleteLogFiles(): Promise
+
+Remove all log files. Next `console` calls will be appended to a new empty log file.
