@@ -9,7 +9,7 @@ _A simple file-logger for React Native with configurable rolling policy, based o
 * **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings
 
 ## How it works
-React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log string. It uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to log into files with configurable rolling policy.
+React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log string. It also uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to append logs into files with optional rolling policy.
 
 ## Installation
 
@@ -32,7 +32,7 @@ This is all you need to add file-logging to your app. `FileLogger.configure()` a
 
 #### FileLogger.configure(options?): Promise
 
-Initialize the file-logger with the specified options. As soon as the returned promise is resolved, all `console` calls are appended to the log file. To ensure that no logs are missing, it is good practice to `await` this call at the launch of your app.
+Initialize the file-logger with the specified options. As soon as the returned promise is resolved, all `console` calls are appended to a log file. To ensure that no logs are missing, it is good practice to `await` this call at the launch of your app.
 
 | Option | Description | Default |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ Send all log files by email. On iOS, it uses `MFMailComposeViewController` to en
 
 #### FileLogger.enable()
 
-Enable file-logging. It is already enabled by `FileLogger.configure()` so you only to call it if you've previously called `FileLogger.disable()`.
+Enable file-logging. It is already enabled by `FileLogger.configure()` so you only need to call it if you've previously called `FileLogger.disable()`.
 
 #### FileLogger.disable()
 
