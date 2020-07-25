@@ -9,7 +9,7 @@ _A simple file-logger for React Native with configurable rolling policy, based o
 * **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings
 
 ## How it works
-React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log string. It also uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to append logs into files with optional rolling policy.
+React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log string. React-native-file-logger uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to append logs into files with an optional rolling policy.
 
 ## Installation
 
