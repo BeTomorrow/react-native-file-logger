@@ -1,7 +1,7 @@
 {
 	"name": "react-native-file-logger",
 	"title": "React Native File Logger",
-	"version": "0.1.2",
+	"version": "0.1.4",
 	"description": "A simple file-logger for React Native",
 	"main": "dist/index.js",
 	"files": [
