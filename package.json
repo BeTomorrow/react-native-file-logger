@@ -12,7 +12,8 @@
 		"RNFileLogger.podspec"
 	],
 	"scripts": {
-		"build": "rimraf dist && tsc"
+		"build": "rimraf dist && tsc",
+		"prepublish": "npm run build"
 	},
 	"repository": {
 		"type": "git",
