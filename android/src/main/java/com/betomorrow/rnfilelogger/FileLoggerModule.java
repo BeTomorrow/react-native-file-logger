@@ -3,6 +3,8 @@ package com.betomorrow.rnfilelogger;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.core.content.FileProvider;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -180,10 +182,16 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
             ArrayList<Uri> uris = new ArrayList<>();
             for (File file : getLogFiles()) {
-                uris.add(Uri.fromFile(file));
+                Uri fileUri = FileProvider.getUriForFile(
+                        reactContext,
+                        reactContext.getApplicationContext().getPackageName() + ".provider",
+                        file);
+                uris.add(fileUri);
             }
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            reactContext.startActivity(Intent.createChooser(intent, "Send Logs"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            
+            reactContext.startActivity(intent);
 
             promise.resolve(null);
         } catch (Exception e) {
