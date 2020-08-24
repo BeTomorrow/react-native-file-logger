@@ -101,10 +101,6 @@ Shortcut for `FileLogger.write(LogLevel.Error, str)`.
 
 Append the given string to the log file with the specified log level. The string will be formatted with the current time and log-level.
 
-### FileLogger.write(level, str)
-
-Append the given string to the log file with the specified log level. The string will be formatted with the current time and log-level.
-
 ### FileLogger.writeRaw(level, str)
 
 Append the given string to the log file with the specified log level. The string will be written unformatted.
