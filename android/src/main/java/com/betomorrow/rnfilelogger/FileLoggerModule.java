@@ -101,7 +101,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         encoder.setCharset(Charset.forName("UTF-8"));
-        encoder.setPattern("%date [%level]  %msg%n");
+        encoder.setPattern("%msg%n");
         encoder.start();
 
         rollingFileAppender.setEncoder(encoder);

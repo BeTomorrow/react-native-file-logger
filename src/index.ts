@@ -106,8 +106,12 @@ class FileLoggerStatic {
 			const now = new Date();
 			const levelName = logLevelNames[level];
 			const formatted = `${now} [${levelName}]  ${str}`;
-			RNFileLogger.write(level, formatted);
+			this.writeRaw(level, formatted);
 		}
+	}
+
+	writeRaw(level: LogLevel, str: string) {
+		RNFileLogger.write(level, str);
 	}
 
 	private _handleLog = (level: string, str: string) => {
