@@ -11,8 +11,11 @@ export enum LogLevel {
 	Error,
 }
 
+const logLevelNames = ["DEBUG", "INFO", "WARN", "ERROR"];
+
 export interface ConfigureOptions {
 	logLevel?: LogLevel;
+	captureConsole?: boolean;
 	dailyRolling?: boolean;
 	maximumFileSize?: number;
 	maximumNumberOfFiles?: number;
@@ -31,6 +34,7 @@ class FileLoggerStatic {
 	async configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
 			logLevel = LogLevel.Debug,
+			captureConsole = true,
 			dailyRolling = true,
 			maximumFileSize = 1024 * 1024,
 			maximumNumberOfFiles = 5,
@@ -45,16 +49,19 @@ class FileLoggerStatic {
 		});
 
 		this.setLogLevel(logLevel);
-		this.enable();
+
+		if (captureConsole) {
+			this.enableConsoleCapture();
+		}
 	}
 
-	enable() {
+	enableConsoleCapture() {
 		// __inspectorLog is an undocumented feature of React Native
 		// that allows to intercept calls to console.debug/log/warn/error
 		global.__inspectorLog = this._handleLog;
 	}
 
-	disable() {
+	disableConsoleCapture() {
 		global.__inspectorLog = undefined;
 	}
 
@@ -78,46 +85,47 @@ class FileLoggerStatic {
 		return RNFileLogger.sendLogFilesByEmail(options);
 	}
 
+	debug(str: string) {
+		this.write(LogLevel.Debug, str);
+	}
+
+	info(str: string) {
+		this.write(LogLevel.Info, str);
+	}
+
+	warn(str: string) {
+		this.write(LogLevel.Warning, str);
+	}
+
+	error(str: string) {
+		this.write(LogLevel.Error, str);
+	}
+
+	write(level: LogLevel, str: string) {
+		if (this._logLevel <= level) {
+			const now = new Date();
+			const levelName = logLevelNames[level];
+			const formatted = `${now} [${levelName}]  ${str}`;
+			RNFileLogger.write(level, formatted);
+		}
+	}
+
 	private _handleLog = (level: string, str: string) => {
 		switch (level) {
 			case "debug":
-				this._debug(str);
+				this.debug(str);
+				break;
+			case "log":
+				this.info(str);
 				break;
 			case "warning":
-				this._warn(str);
+				this.warn(str);
 				break;
 			case "error":
-				this._error(str);
-				break;
-			default:
-				this._info(str);
+				this.error(str);
 				break;
 		}
 	};
-
-	private _debug(str: string) {
-		if (this._logLevel <= LogLevel.Debug) {
-			RNFileLogger.debug(str);
-		}
-	}
-
-	private _info(str: string) {
-		if (this._logLevel <= LogLevel.Info) {
-			RNFileLogger.info(str);
-		}
-	}
-
-	private _warn(str: string) {
-		if (this._logLevel <= LogLevel.Warning) {
-			RNFileLogger.warn(str);
-		}
-	}
-
-	private _error(str: string) {
-		if (this._logLevel <= LogLevel.Error) {
-			RNFileLogger.error(str);
-		}
-	}
 }
 
 export const FileLogger = new FileLoggerStatic();

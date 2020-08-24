@@ -5,6 +5,13 @@
 #import <MessageUI/MessageUI.h>
 #import "FileLoggerFormatter.h"
 
+enum LogLevel {
+    LOG_LEVEL_DEBUG,
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_WARNING,
+    LOG_LEVEL_ERROR
+};
+
 static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
 @interface FileLogger () <MFMailComposeViewControllerDelegate>
@@ -39,20 +46,21 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(debug:(NSString*)str) {
-    DDLogDebug(@"%@", str);
-}
-
-RCT_EXPORT_METHOD(info:(NSString*)str) {
-    DDLogInfo(@"%@", str);
-}
-
-RCT_EXPORT_METHOD(warn:(NSString*)str) {
-    DDLogWarn(@"%@", str);
-}
-
-RCT_EXPORT_METHOD(error:(NSString*)str) {
-    DDLogError(@"%@", str);
+RCT_EXPORT_METHOD(write:(NSNumber*)level str:(NSString*)str) {
+    switch (level.integerValue) {
+        case LOG_LEVEL_DEBUG:
+            DDLogDebug(@"%@", str);
+            break;
+        case LOG_LEVEL_INFO:
+            DDLogInfo(@"%@", str);
+            break;
+        case LOG_LEVEL_WARNING:
+            DDLogWarn(@"%@", str);
+            break;
+        case LOG_LEVEL_ERROR:
+            DDLogError(@"%@", str);
+            break;
+    }
 }
 
 RCT_EXPORT_METHOD(getLogFilePaths:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {

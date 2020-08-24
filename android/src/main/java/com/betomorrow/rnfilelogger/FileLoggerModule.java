@@ -32,6 +32,11 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 
 public class FileLoggerModule extends ReactContextBaseJavaModule {
+    private static final int LOG_LEVEL_DEBUG = 0;
+    private static final int LOG_LEVEL_INFO = 1;
+    private static final int LOG_LEVEL_WARNING = 2;
+    private static final int LOG_LEVEL_ERROR = 3;
+
     private static Logger logger = LoggerFactory.getLogger(FileLoggerModule.class);
 
     private final ReactApplicationContext reactContext;
@@ -112,23 +117,21 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void debug(String str) {
-        logger.debug(str);
-    }
-
-    @ReactMethod
-    public void info(String str) {
-        logger.info(str);
-    }
-
-    @ReactMethod
-    public void warn(String str) {
-        logger.warn(str);
-    }
-
-    @ReactMethod
-    public void error(String str) {
-        logger.error(str);
+    public void write(int level, String str) {
+        switch (level) {
+            case LOG_LEVEL_DEBUG:
+                logger.debug(str);
+                break;
+            case LOG_LEVEL_INFO:
+                logger.info(str);
+                break;
+            case LOG_LEVEL_WARNING:
+                logger.warn(str);
+                break;
+            case LOG_LEVEL_ERROR:
+                logger.error(str);
+                break;
+        }
     }
 
     @ReactMethod

@@ -17,9 +17,9 @@ export const App = () => {
 
 	const changeEnabled = value => {
 		if (value) {
-			FileLogger.enable();
+			FileLogger.enableConsoleCapture();
 		} else {
-			FileLogger.disable();
+			FileLogger.disableConsoleCapture();
 		}
 		setEnabled(value);
 	};
