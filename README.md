@@ -37,7 +37,7 @@ Initialize the file-logger with the specified options. As soon as the returned p
 | Option | Description | Default |
 | --- | --- | --- |
 | `logLevel` | Minimum log-level for file output (it won't affect console output) | LogLevel.Debug |
-| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can also be changed manually with the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
+| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can be changed by calling the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
 | `dailyRolling` | If `true`, a new log file is created every day | `true` |
 | `maximumFileSize` | A new log file is created when current log file exceeds the given size in bytes. `0` to disable | `1024 * 1024` (1MB) |
 | `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable | `5` |
@@ -79,3 +79,32 @@ Remove all log files. Next `console` calls will be appended to a new empty log f
 
 ## Direct access API
 
+If you don't want to use `console` calls for file-logging, you can directly use the following methods to directly write to the log file. It is encouraged to wrapped these calls around your own logger API.
+
+### FileLogger.debug(str)
+
+Shortcut for `FileLogger.write(LogLevel.Debug, str)`.
+
+### FileLogger.info(str)
+
+Shortcut for `FileLogger.write(LogLevel.Info, str)`.
+
+### FileLogger.warn(str)
+
+Shortcut for `FileLogger.write(LogLevel.Warning, str)`.
+
+### FileLogger.error(str)
+
+Shortcut for `FileLogger.write(LogLevel.Error, str)`.
+
+### FileLogger.write(level, str)
+
+Append the given string to the log file with the specified log level. The string will be formatted with the current time and log-level.
+
+### FileLogger.write(level, str)
+
+Append the given string to the log file with the specified log level. The string will be formatted with the current time and log-level.
+
+### FileLogger.writeRaw(level, str)
+
+Append the given string to the log file with the specified log level. The string will be written unformatted.
