@@ -37,6 +37,7 @@ Initialize the file-logger with the specified options. As soon as the returned p
 | Option | Description | Default |
 | --- | --- | --- |
 | `logLevel` | Minimum log-level for file output (it won't affect console output) | LogLevel.Debug |
+| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can also be changed manually with the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
 | `dailyRolling` | If `true`, a new log file is created every day | `true` |
 | `maximumFileSize` | A new log file is created when current log file exceeds the given size in bytes. `0` to disable | `1024 * 1024` (1MB) |
 | `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable | `5` |
@@ -52,13 +53,13 @@ Send all log files by email. On iOS, it uses `MFMailComposeViewController` to en
 | `subject` | Email subject |
 | `body` | Plain text body message of the email |
 
-#### FileLogger.enable()
+#### FileLogger.enableConsoleCapture()
 
-Enable file-logging. It is already enabled by `FileLogger.configure()` so you only need to call it if you've previously called `FileLogger.disable()`.
+Enable automatically writing logs from `console` calls to the current log file. It is already enabled by `FileLogger.configure()` by default.
 
-#### FileLogger.disable()
+#### FileLogger.disableConsoleCapture()
 
-Disable file-logging. `console` calls will no longer be appended to log file.
+After calling this method, `console` calls will no longer be appended to the current log file.
 
 #### FileLogger.setLogLevel(logLevel)
 
@@ -75,3 +76,6 @@ Returns a promise with the absolute paths to the log files.
 #### FileLogger.deleteLogFiles(): Promise
 
 Remove all log files. Next `console` calls will be appended to a new empty log file.
+
+## Direct access API
+
