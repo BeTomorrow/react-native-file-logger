@@ -7,8 +7,7 @@ export const App = () => {
 	const [enabled, setEnabled] = useState(true);
 
 	useEffect(() => {
-		FileLogger.configure({ logLevel });
-		console.log("File-logger configured");
+		FileLogger.configure({ logLevel }).then(() => console.log("File-logger configured"));
 	}, []);
 
 	const showLogFilePaths = async () => {
