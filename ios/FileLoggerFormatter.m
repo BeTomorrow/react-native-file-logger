@@ -3,7 +3,7 @@
 @implementation FileLoggerFormatter
 
 - (NSString*)formatLogMessage:(DDLogMessage*)logMessage {
-    return logMessage;
+    return logMessage.message;
 }
 
 @end

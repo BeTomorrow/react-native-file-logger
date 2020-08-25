@@ -11,10 +11,11 @@ export enum LogLevel {
 	Error,
 }
 
-const logLevelNames = ["DEBUG", "INFO", "WARN", "ERROR"];
+export type LogFormatter = (level: LogLevel, msg: string) => string;
 
 export interface ConfigureOptions {
 	logLevel?: LogLevel;
+	formatter?: LogFormatter;
 	captureConsole?: boolean;
 	dailyRolling?: boolean;
 	maximumFileSize?: number;
@@ -30,10 +31,12 @@ export interface SendByEmailOptions {
 
 class FileLoggerStatic {
 	private _logLevel = LogLevel.Debug;
+	private _formatter = defaultFormatter;
 
 	async configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
 			logLevel = LogLevel.Debug,
+			formatter = defaultFormatter,
 			captureConsole = true,
 			dailyRolling = true,
 			maximumFileSize = 1024 * 1024,
@@ -48,7 +51,8 @@ class FileLoggerStatic {
 			logsDirectory,
 		});
 
-		this.setLogLevel(logLevel);
+		this._logLevel = logLevel;
+		this._formatter = formatter;
 
 		if (captureConsole) {
 			this.enableConsoleCapture();
@@ -85,51 +89,52 @@ class FileLoggerStatic {
 		return RNFileLogger.sendLogFilesByEmail(options);
 	}
 
-	debug(str: string) {
-		this.write(LogLevel.Debug, str);
+	debug(msg: string) {
+		this.write(LogLevel.Debug, msg);
 	}
 
-	info(str: string) {
-		this.write(LogLevel.Info, str);
+	info(msg: string) {
+		this.write(LogLevel.Info, msg);
 	}
 
-	warn(str: string) {
-		this.write(LogLevel.Warning, str);
+	warn(msg: string) {
+		this.write(LogLevel.Warning, msg);
 	}
 
-	error(str: string) {
-		this.write(LogLevel.Error, str);
+	error(msg: string) {
+		this.write(LogLevel.Error, msg);
 	}
 
-	write(level: LogLevel, str: string) {
+	write(level: LogLevel, msg: string) {
 		if (this._logLevel <= level) {
-			const now = new Date();
-			const levelName = logLevelNames[level];
-			const formatted = `${now} [${levelName}]  ${str}`;
-			this.writeRaw(level, formatted);
+			RNFileLogger.write(level, this._formatter(level, msg));
 		}
 	}
 
-	writeRaw(level: LogLevel, str: string) {
-		RNFileLogger.write(level, str);
-	}
-
-	private _handleLog = (level: string, str: string) => {
+	private _handleLog = (level: string, msg: string) => {
 		switch (level) {
 			case "debug":
-				this.debug(str);
+				this.debug(msg);
 				break;
 			case "log":
-				this.info(str);
+				this.info(msg);
 				break;
 			case "warning":
-				this.warn(str);
+				this.warn(msg);
 				break;
 			case "error":
-				this.error(str);
+				this.error(msg);
 				break;
 		}
 	};
 }
+
+const logLevelNames = ["DEBUG", "INFO", "WARN", "ERROR"];
+
+const defaultFormatter: LogFormatter = (level, msg) => {
+	const now = new Date();
+	const levelName = logLevelNames[level];
+	return `${now.toISOString()} [${levelName}]  ${msg}`;
+};
 
 export const FileLogger = new FileLoggerStatic();

@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(write:(NSNumber*)level str:(NSString*)str) {
+RCT_EXPORT_METHOD(write:(NSNumber* _Nonnull)level str:(NSString*)str) {
     switch (level.integerValue) {
         case LOG_LEVEL_DEBUG:
             DDLogDebug(@"%@", str);
