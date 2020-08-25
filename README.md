@@ -26,7 +26,7 @@ import { FileLogger } from "react-native-file-logger";
 FileLogger.configure();
 ```
 
-This is all you need to add file-logging to your app. `FileLogger.configure()` also takes options to customize the rolling policy, log directory path or log-level.
+This is all you need to add file-logging to your app. All your existing `console` calls will be appended to a log file. `FileLogger.configure()` also takes options to customize the rolling policy, log directory path or log-level. If you don't want to use `console` calls for logging, you can also use the [direct access API](#direct-access-api).
 
 ## API
 
