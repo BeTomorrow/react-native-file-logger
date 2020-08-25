@@ -9,7 +9,7 @@ _A simple file-logger for React Native with configurable rolling policy, based o
 * **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings
 
 ## How it works
-React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log string. React-native-file-logger uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to append logs into files with an optional rolling policy.
+React-native-file-logger uses the [undocumented](https://github.com/facebook/react-native/blob/3c9e5f1470c91ff8a161d8e248cf0a73318b1f40/Libraries/polyfills/console.js#L433) `global.__inspectorLog` from React-native. It allows to intercept any calls to `console` and to retrieve the already-formatted log message. React-native-file-logger uses file-loggers from [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack) on iOS and [Logback Android](https://github.com/tony19/logback-android) on Android to append messages into log files with an optional rolling policy.
 
 ## Installation
 
@@ -36,8 +36,9 @@ Initialize the file-logger with the specified options. As soon as the returned p
 
 | Option | Description | Default |
 | --- | --- | --- |
-| `logLevel` | Minimum log-level for file output (it won't affect console output) | LogLevel.Debug |
-| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can be changed by calling the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
+| `logLevel` | Minimum log level for file output (it won't affect console output) | LogLevel.Debug |
+| `formatter` | A function that takes the log level and message and returns the formatted string to write to the log file. | Default format: `${now} [${level}]  ${msg}` |
+| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can also be changed by calling the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
 | `dailyRolling` | If `true`, a new log file is created every day | `true` |
 | `maximumFileSize` | A new log file is created when current log file exceeds the given size in bytes. `0` to disable | `1024 * 1024` (1MB) |
 | `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable | `5` |
@@ -55,19 +56,19 @@ Send all log files by email. On iOS, it uses `MFMailComposeViewController` to en
 
 #### FileLogger.enableConsoleCapture()
 
-Enable automatically writing logs from `console` calls to the current log file. It is already enabled by `FileLogger.configure()` by default.
+Enable appending messages from `console` calls to the current log file. It is already enabled by default when calling `FileLogger.configure()`.
 
 #### FileLogger.disableConsoleCapture()
 
-After calling this method, `console` calls will no longer be appended to the current log file.
+After calling this method, `console` calls will no longer be written to the current log file.
 
 #### FileLogger.setLogLevel(logLevel)
 
-Change the minimum log-level for file-output. The initial log-level can be passed as an option to `FileLogger.configure()`.
+Change the minimum log level for file-output. The initial log level can be passed as an option to `FileLogger.configure()`.
 
 #### FileLogger.getLogLevel(): LogLevel
 
-Return the current log-level.
+Return the current log level.
 
 #### FileLogger.getLogFilePaths(): Promise<string[]>
 
@@ -79,28 +80,25 @@ Remove all log files. Next `console` calls will be appended to a new empty log f
 
 ## Direct access API
 
-If you don't want to use `console` calls for file-logging, you can directly use the following methods to directly write to the log file. It is encouraged to wrapped these calls around your own logger API.
+If you don't want to use `console` calls for file-logging, you can directly use the following methods to directly write messages to the log file. It is encouraged to wrap these calls with your own logger API.
 
-### FileLogger.debug(str)
+### FileLogger.debug(msg)
 
-Shortcut for `FileLogger.write(LogLevel.Debug, str)`.
+Shortcut for `FileLogger.write(LogLevel.Debug, msg)`.
 
-### FileLogger.info(str)
+### FileLogger.info(msg)
 
-Shortcut for `FileLogger.write(LogLevel.Info, str)`.
+Shortcut for `FileLogger.write(LogLevel.Info, msg)`.
 
-### FileLogger.warn(str)
+### FileLogger.warn(msg)
 
-Shortcut for `FileLogger.write(LogLevel.Warning, str)`.
+Shortcut for `FileLogger.write(LogLevel.Warning, msg)`.
 
-### FileLogger.error(str)
+### FileLogger.error(msg)
 
-Shortcut for `FileLogger.write(LogLevel.Error, str)`.
+Shortcut for `FileLogger.write(LogLevel.Error, msg)`.
 
-### FileLogger.write(level, str)
+### FileLogger.write(level, msg)
 
-Append the given string to the log file with the specified log level. The string will be formatted with the current time and log-level.
+Append the given message to the log file with the specified log level. The message will be formatted with the `formatter` function specified during the `FileLogger.configure()` call.
 
-### FileLogger.writeRaw(level, str)
-
-Append the given string to the log file with the specified log level. The string will be written unformatted.
