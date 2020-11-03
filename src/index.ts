@@ -129,9 +129,9 @@ class FileLoggerStatic {
 	};
 }
 
-const logLevelNames = ["DEBUG", "INFO", "WARN", "ERROR"];
+export const logLevelNames = ["DEBUG", "INFO", "WARN", "ERROR"];
 
-const defaultFormatter: LogFormatter = (level, msg) => {
+export const defaultFormatter: LogFormatter = (level, msg) => {
 	const now = new Date();
 	const levelName = logLevelNames[level];
 	return `${now.toISOString()} [${levelName}]  ${msg}`;
