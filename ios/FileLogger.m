@@ -5,6 +5,11 @@
 #import <MessageUI/MessageUI.h>
 #import "FileLoggerFormatter.h"
 
+#define DDLogCustomDebug(frmt, ...) LOG_MAYBE(YES, ddLogLevel, DDLogFlagDebug, loggerContext, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
+#define DDLogCustomInfo(frmt, ...) LOG_MAYBE(YES, ddLogLevel, DDLogFlagInfo, loggerContext, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
+#define DDLogCustomWarn(frmt, ...) LOG_MAYBE(YES, ddLogLevel, DDLogFlagWarning, loggerContext, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
+#define DDLogCustomError(frmt, ...) LOG_MAYBE(NO, ddLogLevel, DDLogFlagError, loggerContext, nil, __PRETTY_FUNCTION__, frmt, ##__VA_ARGS__)
+
 enum LogLevel {
     LOG_LEVEL_DEBUG,
     LOG_LEVEL_INFO,
@@ -16,9 +21,17 @@ static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
 @interface FileLogger () <MFMailComposeViewControllerDelegate>
 @property (nonatomic, strong) DDFileLogger* fileLogger;
++ (int) loggerContext;
 @end
 
 @implementation FileLogger
+static int loggerContext;
+
++ (int)loggerContext {
+    @synchronized(self) {
+        return loggerContext;
+    }
+}
 
 RCT_EXPORT_MODULE()
 
@@ -31,10 +44,13 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     NSNumber* maximumFileSize = options[@"maximumFileSize"];
     NSNumber* maximumNumberOfFiles = options[@"maximumNumberOfFiles"];
     NSString* logsDirectory = options[@"logsDirectory"];
-    
+
+    NSNumber* context = options[@"loggerContext"];
+    loggerContext = [context intValue];
+
     id<DDLogFileManager> fileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirectory];
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
-    
+
     DDFileLogger* fileLogger = [[DDFileLogger alloc] initWithLogFileManager:fileManager];
     fileLogger.logFormatter = [[FileLoggerFormatter alloc] init];
     fileLogger.rollingFrequency = [dailyRolling boolValue] ? 24 * 60 * 60 : 0;
@@ -42,23 +58,23 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     [DDLog removeAllLoggers];
     [DDLog addLogger:fileLogger];
     self.fileLogger = fileLogger;
-    
+
     resolve(nil);
 }
 
 RCT_EXPORT_METHOD(write:(NSNumber* _Nonnull)level str:(NSString*)str) {
     switch (level.integerValue) {
         case LOG_LEVEL_DEBUG:
-            DDLogDebug(@"%@", str);
+            DDLogCustomDebug(@"%@", str);
             break;
         case LOG_LEVEL_INFO:
-            DDLogInfo(@"%@", str);
+            DDLogCustomInfo(@"%@", str);
             break;
         case LOG_LEVEL_WARNING:
-            DDLogWarn(@"%@", str);
+            DDLogCustomWarn(@"%@", str);
             break;
         case LOG_LEVEL_ERROR:
-            DDLogError(@"%@", str);
+            DDLogCustomError(@"%@", str);
             break;
     }
 }
@@ -82,12 +98,12 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     NSString* to = options[@"to"];
     NSString* subject = options[@"subject"];
     NSString* body = options[@"body"];
-    
+
     if (![MFMailComposeViewController canSendMail]) {
        reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
        return;
     }
-    
+
     MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
     composeViewController.mailComposeDelegate = self;
     if (to) {
@@ -99,19 +115,19 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     if (body) {
         [composeViewController setMessageBody:body isHTML:NO];
     }
-    
+
     NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
     for (NSString* logFile in logFiles) {
         NSData* data = [NSData dataWithContentsOfFile:logFile];
         [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
     }
-    
+
     UIViewController* presentingViewController = UIApplication.sharedApplication.delegate.window.rootViewController;
     while (presentingViewController.presentedViewController) {
         presentingViewController = presentingViewController.presentedViewController;
     }
     [presentingViewController presentViewController:composeViewController animated:YES completion:nil];
-    
+
     resolve(nil);
 }
 
@@ -120,4 +136,3 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
 }
 
 @end
-

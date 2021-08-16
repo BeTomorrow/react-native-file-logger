@@ -1,9 +1,14 @@
 #import "FileLoggerFormatter.h"
+#import "FileLogger.h"
 
 @implementation FileLoggerFormatter
 
 - (NSString*)formatLogMessage:(DDLogMessage*)logMessage {
-    return logMessage.message;
+    if (logMessage->_context == FileLogger.loggerContext) {
+        return logMessage.message;
+    } else {
+        return nil;
+    }
 }
 
 @end

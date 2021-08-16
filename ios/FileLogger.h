@@ -2,4 +2,6 @@
 
 @interface FileLogger : NSObject <RCTBridgeModule>
 
++ (int)loggerContext;
+
 @end
