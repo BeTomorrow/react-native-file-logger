@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"build": "rimraf dist && tsc",
-		"prepublishOnly": "npm run build"
+		"prepare": "npm run build"
 	},
 	"repository": {
 		"type": "git",
