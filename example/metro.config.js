@@ -13,16 +13,26 @@
 const path = require('path')
 
 module.exports = {
-  // workaround for an issue with symlinks encountered starting with
-  // metro@0.55 / React Native 0.61
-  // (not needed with React Native 0.60 / metro@0.54)
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: true,
+      },
+    }),
+  },
   resolver: {
     extraNodeModules: new Proxy(
       {},
-      { get: (_, name) => path.resolve('.', 'node_modules', name) }
-    )
+      {
+        get: (target, name) => {
+          return path.join(__dirname, `node_modules/${name}`);
+        },
+      },
+    ),
   },
-
-  // quick workaround for another issue with symlinks
-  watchFolders: ['.', '..']
-}
+  watchFolders: [
+    path.resolve(__dirname, '..'),
+    path.resolve(__dirname, '../node_modules'),
+  ],
+};

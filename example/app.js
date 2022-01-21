@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Switch, Text, View } from "react-native";
 import { FileLogger, LogLevel } from "react-native-file-logger";
 
