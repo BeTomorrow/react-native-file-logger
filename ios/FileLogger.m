@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
 
     resolve(nil);
 #else
-    rejecter(@"100", @"Not supported on macOS", nil);
+    reject(@"100", @"Not supported on macOS", nil);
 #endif
 }
 
