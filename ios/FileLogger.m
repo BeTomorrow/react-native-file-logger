@@ -2,8 +2,12 @@
 
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
-//#import <MessageUI/MessageUI.h>
+#import <TargetConditionals.h>
 #import "FileLoggerFormatter.h"
+
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MACCATALYST
+#import <MessageUI/MessageUI.h>
+#endif
 
 enum LogLevel {
     LOG_LEVEL_DEBUG,
@@ -14,7 +18,7 @@ enum LogLevel {
 
 static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
-@interface FileLogger () //<MFMailComposeViewControllerDelegate>
+@interface FileLogger ()
 @property (nonatomic, strong) DDFileLogger* fileLogger;
 @end
 
@@ -79,45 +83,63 @@ RCT_EXPORT_METHOD(deleteLogFiles:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 }
 
 RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-//    NSString* to = options[@"to"];
-//    NSString* subject = options[@"subject"];
-//    NSString* body = options[@"body"];
-//
-//    if (![MFMailComposeViewController canSendMail]) {
-//       reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
-//       return;
-//    }
-//
-//    MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
-//    composeViewController.mailComposeDelegate = self;
-//    if (to) {
-//        [composeViewController setToRecipients:@[to]];
-//    }
-//    if (subject) {
-//        [composeViewController setSubject:subject];
-//    }
-//    if (body) {
-//        [composeViewController setMessageBody:body isHTML:NO];
-//    }
-//
-//    NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
-//    for (NSString* logFile in logFiles) {
-//        NSData* data = [NSData dataWithContentsOfFile:logFile];
-//        [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
-//    }
-//
-//    UIViewController* presentingViewController = UIApplication.sharedApplication.delegate.window.rootViewController;
-//    while (presentingViewController.presentedViewController) {
-//        presentingViewController = presentingViewController.presentedViewController;
-//    }
-//    [presentingViewController presentViewController:composeViewController animated:YES completion:nil];
-//
-//    resolve(nil);
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MACCATALYST
+    NSString* to = options[@"to"];
+    NSString* subject = options[@"subject"];
+    NSString* body = options[@"body"];
+
+    if (![MFMailComposeViewController canSendMail]) {
+       reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
+       return;
+    }
+
+    MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
+    composeViewController.mailComposeDelegate = self;
+    if (to) {
+        [composeViewController setToRecipients:@[to]];
+    }
+    if (subject) {
+        [composeViewController setSubject:subject];
+    }
+    if (body) {
+        [composeViewController setMessageBody:body isHTML:NO];
+    }
+
+    NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
+    for (NSString* logFile in logFiles) {
+        NSData* data = [NSData dataWithContentsOfFile:logFile];
+        [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
+    }
+
+    UIViewController* presentingViewController = UIApplication.sharedApplication.delegate.window.rootViewController;
+    while (presentingViewController.presentedViewController) {
+        presentingViewController = presentingViewController.presentedViewController;
+    }
+    [presentingViewController presentViewController:composeViewController animated:YES completion:nil];
+
+    resolve(nil);
+#else
+    rejecter(@"100", @"Not supported on macOS", nil);
+#endif
 }
 
-//- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
-//    [controller dismissViewControllerAnimated:YES completion:nil];
-//}
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MACCATALYST
+
+#endif
 
 @end
+
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MACCATALYST
+@interface FileLogger (MailComposer) <MFMailComposeViewControllerDelegate>
+@end
+
+@implementation FileLogger (MailComposer)
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+@end
+
+#endif
 
