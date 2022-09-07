@@ -31,16 +31,16 @@
 	"licenseFilename": "LICENSE",
 	"readmeFilename": "README.md",
 	"peerDependencies": {
-		"react": "^16.0.0 || ^17.0.0",
-		"react-native": ">=0.60.0-rc.0 <1.0.x"
+		"react": ">=16.0.0",
+		"react-native": ">=0.60.0"
 	},
 	"devDependencies": {
-		"@babel/preset-env": "^7.16.11",
-		"@types/react-native": "^0.66.13",
-		"prettier": "^2.5.1",
-		"react": "^17.0.2",
-		"react-native": "^0.67.1",
+		"@babel/preset-env": "^7.19.0",
+		"@types/react-native": "^0.69.8",
+		"prettier": "^2.7.1",
+		"react": "^18.1.0",
+		"react-native": "^0.70.0",
 		"rimraf": "^3.0.2",
-		"typescript": "^4.5.5"
+		"typescript": "^4.8.2"
 	}
 }
