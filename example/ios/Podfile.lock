@@ -371,7 +371,7 @@ PODS:
     - React-jsi (= 0.70.0)
     - React-logger (= 0.70.0)
     - React-perflogger (= 0.70.0)
-  - RNFileLogger (0.3.1):
+  - RNFileLogger (0.4.0):
     - CocoaLumberjack
     - React
   - SocketRocket (0.6.0)
@@ -580,7 +580,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 5499b77c0fd57f346a5f0b36bb79fdb020d17d3e
   React-runtimeexecutor: 80c195ffcafb190f531fdc849dc2d19cb4bb2b34
   ReactCommon: de55f940495d7bf87b5d7bf55b5b15cdd50d7d7b
-  RNFileLogger: bee549b4dc1a8793398fc8e28ce622d6a0c62deb
+  RNFileLogger: 87fc2a50db74403f9a97b4b6731a0177dd8a631a
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 82c9e8f652789f67d98bed5aef9d6653f71b04a9
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
