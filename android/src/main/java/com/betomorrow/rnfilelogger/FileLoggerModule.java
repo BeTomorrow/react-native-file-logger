@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 
 import org.slf4j.Logger;
@@ -166,7 +167,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendLogFilesByEmail(ReadableMap options, Promise promise) {
         try {
-            String to = options.hasKey("to") ? options.getString("to") : null;
+            ReadableArray to = options.hasKey("to") ? options.getArray("to") : null;
             String subject = options.hasKey("subject") ? options.getString("subject") : null;
             String body = options.hasKey("body") ? options.getString("body") : null;
 
@@ -174,7 +175,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             intent.setType("plain/text");
             
             if (to != null) {
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+                intent.putExtra(Intent.EXTRA_EMAIL, readableArrayToStringArray(to));
             }
             if (subject != null) {
                 intent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -211,4 +212,13 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    private String[] readableArrayToStringArray(ReadableArray r) {
+        int length = r.size();
+        String[] strArray = new String[length];
+        for (int i = 0; i < length; i++) {
+            strArray[i] = r.getString(i);
+        }
+        return strArray;
+  }
 }

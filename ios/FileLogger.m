@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(deleteLogFiles:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 }
 
 RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    NSString* to = options[@"to"];
+    NSArray<NSString*>* to = options[@"to"];
     NSString* subject = options[@"subject"];
     NSString* body = options[@"body"];
     
@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
     composeViewController.mailComposeDelegate = self;
     if (to) {
-        [composeViewController setToRecipients:@[to]];
+        [composeViewController setToRecipients:to];
     }
     if (subject) {
         [composeViewController setSubject:subject];

@@ -24,7 +24,7 @@ export interface ConfigureOptions {
 }
 
 export interface SendByEmailOptions {
-	to?: string;
+	to?: string | string[];
 	subject?: string;
 	body?: string;
 }
@@ -86,7 +86,12 @@ class FileLoggerStatic {
 	}
 
 	sendLogFilesByEmail(options: SendByEmailOptions = {}): Promise<void> {
-		return RNFileLogger.sendLogFilesByEmail(options);
+		if (options.to) {
+			const to = Array.isArray(options.to) ? options.to : [options.to];
+			return RNFileLogger.sendLogFilesByEmail({ ...options, to });
+		} else {
+			return RNFileLogger.sendLogFilesByEmail(options);
+		}
 	}
 
 	debug(msg: string) {
