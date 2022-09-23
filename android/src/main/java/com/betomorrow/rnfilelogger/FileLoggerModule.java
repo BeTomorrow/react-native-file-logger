@@ -38,7 +38,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     private static final int LOG_LEVEL_WARNING = 2;
     private static final int LOG_LEVEL_ERROR = 3;
 
-    private static Logger logger = LoggerFactory.getLogger(FileLoggerModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileLoggerModule.class);
 
     private final ReactApplicationContext reactContext;
     private String logsDirectory;
@@ -59,6 +59,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         boolean dailyRolling = options.getBoolean("dailyRolling");
         int maximumFileSize = options.getInt("maximumFileSize");
         int maximumNumberOfFiles = options.getInt("maximumNumberOfFiles");
+        boolean zipped = options.getBoolean("zipped");
 
         logsDirectory = options.hasKey("logsDirectory")
                 ? options.getString("logsDirectory")
@@ -74,7 +75,12 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         if (dailyRolling) {
             SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
             rollingPolicy.setContext(loggerContext);
-            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
+            if(zipped){
+                rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log.zip");
+            }
+            else{
+                rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%d{yyyy-MM-dd}.%i.log");
+            }
             rollingPolicy.setMaxFileSize(new FileSize(maximumFileSize));
             rollingPolicy.setTotalSizeCap(new FileSize(maximumNumberOfFiles * maximumFileSize));
             rollingPolicy.setMaxHistory(maximumNumberOfFiles);
@@ -85,7 +91,12 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         } else if (maximumFileSize > 0) {
             FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
             rollingPolicy.setContext(loggerContext);
-            rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
+            if(zipped){
+                rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log.zip");
+            }
+            else{
+                rollingPolicy.setFileNamePattern(logsDirectory + "/" + logPrefix + "-%i.log");
+            }
             rollingPolicy.setMinIndex(1);
             rollingPolicy.setMaxIndex(maximumNumberOfFiles);
             rollingPolicy.setParent(rollingFileAppender);
@@ -205,12 +216,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
 
     private File[] getLogFiles() {
         File directory = new File(logsDirectory);
-        return directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".log");
-            }
-        });
+        return directory.listFiles((dir, name) -> name.endsWith(".log") || name.endsWith(".zip"));
     }
 
     private String[] readableArrayToStringArray(ReadableArray r) {

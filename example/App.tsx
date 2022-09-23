@@ -7,7 +7,7 @@ export const App = () => {
   const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
-    FileLogger.configure({logLevel: LogLevel.Debug}).then(() =>
+    FileLogger.configure({logLevel: LogLevel.Debug, zipped: true}).then(() =>
       console.log('File-logger configured'),
     );
   }, []);
@@ -40,9 +40,26 @@ export const App = () => {
   };
 
   const deleteLogFiles = async () => {
-    FileLogger.deleteLogFiles();
-    Alert.alert('Log files deleted');
+    FileLogger.deleteLogFiles().then(() => Alert.alert('Log files deleted'));
   };
+
+  const generateLogsAsync = async () => {
+    generateLogs.then(() => {
+      for (let counter: number = 1; counter < 1000; counter++) {
+        console.log(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut ' +
+            'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ' +
+            'ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore' +
+            'eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt' +
+            ' mollit anim id est laborum.',
+        );
+      }
+    });
+  };
+
+  const generateLogs = new Promise<void>((resolve, _) => {
+    resolve();
+  });
 
   return (
     <View style={styles.container}>
@@ -70,6 +87,12 @@ export const App = () => {
         </View>
         <View style={styles.button}>
           <Button title="Delete files" onPress={deleteLogFiles} />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="Generate lots of logs"
+            onPress={() => generateLogsAsync()}
+          />
         </View>
       </View>
       <View style={styles.settingsRow}>

@@ -5,13 +5,13 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start",
+    "start": "react-native start --reset-cache",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "react": "18.1.0",
-    "react-native": "0.70.0",
+    "react-native": "0.70.1",
     "react-native-file-logger": "file:.."
   },
   "devDependencies": {
