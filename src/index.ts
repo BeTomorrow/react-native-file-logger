@@ -21,6 +21,7 @@ export interface ConfigureOptions {
 	maximumFileSize?: number;
 	maximumNumberOfFiles?: number;
 	logsDirectory?: string;
+	zipped?: boolean;
 }
 
 export interface SendByEmailOptions {
@@ -42,6 +43,7 @@ class FileLoggerStatic {
 			maximumFileSize = 1024 * 1024,
 			maximumNumberOfFiles = 5,
 			logsDirectory,
+			zipped = true,
 		} = options;
 
 		await RNFileLogger.configure({
@@ -49,6 +51,7 @@ class FileLoggerStatic {
 			maximumFileSize,
 			maximumNumberOfFiles,
 			logsDirectory,
+			zipped
 		});
 
 		this._logLevel = logLevel;

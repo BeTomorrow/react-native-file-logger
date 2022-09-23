@@ -34,16 +34,16 @@ This is all you need to add file-logging to your app. All your existing `console
 
 Initialize the file-logger with the specified options. As soon as the returned promise is resolved, all `console` calls are appended to a log file. To ensure that no logs are missing, it is good practice to `await` this call at the launch of your app.
 
-| Option | Description | Default |
-| --- | --- | --- |
-| `logLevel` | Minimum log level for file output (it won't affect console output) | LogLevel.Debug |
-| `formatter` | A function that takes the log level and message and returns the formatted string to write to the log file. | Default format: `${now} [${level}]  ${msg}` |
-| `captureConsole` | If `true`, all `console` calls are automatically captured and written to a log file. It can also be changed by calling the `enableConsoleCapture()` and `disableConsoleCapture()` methods  | `true` |
-| `dailyRolling` | If `true`, a new log file is created every day | `true` |
-| `maximumFileSize` | A new log file is created when current log file exceeds the given size in bytes. `0` to disable | `1024 * 1024` (1MB) |
-| `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable | `5` |
-| `logsDirectory` | Absolute path of directory where log files are stored. If not defined, log files are stored in the cache directory of the app | `undefined` |
-
+| Option                 | Description                                                                                                                                                                               | Default                                     |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
+| `logLevel`             | Minimum log level for file output (it won't affect console output)                                                                                                                        | LogLevel.Debug                              |
+| `formatter`            | A function that takes the log level and message and returns the formatted string to write to the log file.                                                                                | Default format: `${now} [${level}]  ${msg}` |
+| `captureConsole`       | If `true`, all `console` calls are automatically captured and written to a log file. It can also be changed by calling the `enableConsoleCapture()` and `disableConsoleCapture()` methods | `true`                                      |
+| `dailyRolling`         | If `true`, a new log file is created every day                                                                                                                                            | `true`                                      |
+| `maximumFileSize`      | A new log file is created when current log file exceeds the given size in bytes. `0` to disable                                                                                           | `1024 * 1024` (1MB)                         |
+| `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable                          | `5`                                         |
+| `logsDirectory`        | Absolute path of directory where log files are stored. If not defined, log files are stored in the cache directory of the app                                                             | `undefined`                                 |
+| `zipped`               | Whether rolling files should be zipped                                                                                                                                                    | `true`                                      |
 #### FileLogger.sendLogFilesByEmail(options?): Promise
 
 Send all log files by email. On iOS, it uses `MFMailComposeViewController` to ensure that the user won't leave the app when sending log files.
