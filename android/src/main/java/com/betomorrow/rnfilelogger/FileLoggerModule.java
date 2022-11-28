@@ -195,9 +195,13 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
                         file);
                 uris.add(fileUri);
             }
-            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            
+
+            if (!logFilesSelector.equals("none")) {
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             reactContext.startActivity(intent);
 
             promise.resolve(null);
