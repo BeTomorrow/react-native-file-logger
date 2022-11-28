@@ -187,16 +187,15 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
                 intent.putExtra(Intent.EXTRA_TEXT, body);
             }
 
-            ArrayList<Uri> uris = new ArrayList<>();
-            for (File file : getLogFiles(logFilesSelector)) {
-                Uri fileUri = FileProvider.getUriForFile(
-                        reactContext,
-                        reactContext.getApplicationContext().getPackageName() + ".provider",
-                        file);
-                uris.add(fileUri);
-            }
-
-            if (!logFilesSelector.equals("none")) {
+            if (!"none".equals(logFilesSelector)) {
+                ArrayList<Uri> uris = new ArrayList<>();
+                for (File file : getLogFiles(logFilesSelector)) {
+                    Uri fileUri = FileProvider.getUriForFile(
+                            reactContext,
+                            reactContext.getApplicationContext().getPackageName() + ".provider",
+                            file);
+                    uris.add(fileUri);
+                }
                 intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
