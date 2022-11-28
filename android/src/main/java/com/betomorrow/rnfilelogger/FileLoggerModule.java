@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -139,7 +141,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     public void getLogFilePaths(Promise promise) {
         try {
             WritableArray result = Arguments.createArray();
-            for (File logFile: getLogFiles()) {
+            for (File logFile: getLogFiles(null)) {
                 result.pushString(logFile.getAbsolutePath());
             }
             promise.resolve(result);
@@ -151,7 +153,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void deleteLogFiles(Promise promise) {
         try {
-            for (File file: getLogFiles()) {
+            for (File file: getLogFiles(null)) {
                 file.delete();
             }
             if (configureOptions != null) {
@@ -170,6 +172,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             ReadableArray to = options.hasKey("to") ? options.getArray("to") : null;
             String subject = options.hasKey("subject") ? options.getString("subject") : null;
             String body = options.hasKey("body") ? options.getString("body") : null;
+            String logFilesSelector = options.hasKey("logFiles") ? options.getString("logFiles") : "none";
 
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE, Uri.parse("mailto:"));
             intent.setType("plain/text");
@@ -185,7 +188,7 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             }
 
             ArrayList<Uri> uris = new ArrayList<>();
-            for (File file : getLogFiles()) {
+            for (File file : getLogFiles(logFilesSelector)) {
                 Uri fileUri = FileProvider.getUriForFile(
                         reactContext,
                         reactContext.getApplicationContext().getPackageName() + ".provider",
@@ -203,14 +206,19 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private File[] getLogFiles() {
+    private File[] getLogFiles(String regex) {
         File directory = new File(logsDirectory);
-        return directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".log");
-            }
-        });
+
+        if (regex != null) {
+            return switch (regex) {
+                case "all" -> directory.listFiles(new FileEndsWithFilter(".log"));
+                case "latest" -> directory.listFiles(new FileEndsWithFilter("latest.log"));
+                case "none" -> new File[];
+                default -> directory.listFiles(new RegexFileFilter(regex));
+            };
+        }
+
+        return directory.listFiles(new FileEndsWithFilter(".log"));
     }
 
     private String[] readableArrayToStringArray(ReadableArray r) {
@@ -220,5 +228,32 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
             strArray[i] = r.getString(i);
         }
         return strArray;
-  }
+    }
+
+    private static class RegexFileFilter implements FilenameFilter {
+        private Pattern pattern;
+
+        public RegexFileFilter(String pattern) {
+            this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        }
+
+        @Override
+        public boolean accept(File dir, String name) {
+            Matcher matcher = pattern.matcher(name);
+            return matcher.find();
+        }
+    }
+
+    private static class FileEndsWithFilter implements FilenameFilter {
+        private String ending = "";
+
+        public FileEndsWithFilter(String ending) {
+            this.ending = ending;
+        }
+
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.endsWith(ending);
+        }
+    }
 }
