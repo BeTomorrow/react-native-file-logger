@@ -48,11 +48,12 @@ Initialize the file-logger with the specified options. As soon as the returned p
 
 Send all log files by email. On iOS, it uses `MFMailComposeViewController` to ensure that the user won't leave the app when sending log files.
 
-| Option | Description |
-| --- | --- |
-| `to` | Email address of the recipient |
-| `subject` | Email subject |
-| `body` | Plain text body message of the email |
+| Option     | Description                                                                                                                                  |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| `to`       | Email address of the recipient                                                                                                               |
+| `subject`  | Email subject                                                                                                                                |
+| `body`     | Plain text body message of the email                                                                                                         |
+| `logFiles` | Log file selector, supports `all`, `latest`, `none` and arbitrary other strings that are matched against the log filename as a regex pattern |
 
 #### FileLogger.enableConsoleCapture()
 

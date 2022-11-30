@@ -27,6 +27,7 @@ export interface SendByEmailOptions {
 	to?: string | string[];
 	subject?: string;
 	body?: string;
+	logFiles?: string;
 }
 
 class FileLoggerStatic {
