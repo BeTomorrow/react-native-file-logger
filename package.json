@@ -42,5 +42,17 @@
 		"react-native": "^0.70.0",
 		"rimraf": "^3.0.2",
 		"typescript": "^4.8.2"
+	},
+	"codegenConfig": {
+		"libraries": [
+			{
+				"name": "RNFileLogger",
+				"type": "modules",
+				"jsSrcsDir": "src",
+				"android": {
+					"javaPackageName": "com.betomorrow.rnfilelogger"
+				}
+			}
+		]
 	}
 }
