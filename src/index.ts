@@ -1,8 +1,6 @@
-import { NativeModules } from "react-native";
-
 declare var global: any;
 
-const { FileLogger: RNFileLogger } = NativeModules;
+const RNFileLogger = require("./NativeRNFileLogger").default;
 
 export enum LogLevel {
 	Debug,

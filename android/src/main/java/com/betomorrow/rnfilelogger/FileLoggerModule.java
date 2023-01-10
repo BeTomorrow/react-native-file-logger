@@ -3,12 +3,12 @@ package com.betomorrow.rnfilelogger;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -32,7 +32,7 @@ import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 
-public class FileLoggerModule extends ReactContextBaseJavaModule {
+public class FileLoggerModule extends NativeRNFileLoggerSpec {
     private static final int LOG_LEVEL_DEBUG = 0;
     private static final int LOG_LEVEL_INFO = 1;
     private static final int LOG_LEVEL_WARNING = 2;
@@ -49,9 +49,10 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         this.reactContext = reactContext;
     }
 
+    @NonNull
     @Override
     public String getName() {
-        return "FileLogger";
+        return "RNFileLogger";
     }
 
     @ReactMethod
@@ -117,9 +118,10 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         promise.resolve(null);
     }
 
+    @Override
     @ReactMethod
-    public void write(int level, String str) {
-        switch (level) {
+    public void write(double level, String str) {
+        switch ((int) level) {
             case LOG_LEVEL_DEBUG:
                 logger.debug(str);
                 break;
@@ -221,4 +223,5 @@ public class FileLoggerModule extends ReactContextBaseJavaModule {
         }
         return strArray;
   }
+
 }
