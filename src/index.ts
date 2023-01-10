@@ -1,6 +1,7 @@
+import type RNFileLoggerType from "./NativeRNFileLogger";
 declare var global: any;
 
-const RNFileLogger = require("./NativeRNFileLogger").default;
+const RNFileLogger: typeof RNFileLoggerType = require("./NativeRNFileLogger").default;
 
 export enum LogLevel {
 	Debug,
@@ -85,10 +86,10 @@ class FileLoggerStatic {
 
 	sendLogFilesByEmail(options: SendByEmailOptions = {}): Promise<void> {
 		if (options.to) {
-			const to = Array.isArray(options.to) ? options.to : [options.to];
-			return RNFileLogger.sendLogFilesByEmail({ ...options, to });
+			const toEmails = Array.isArray(options.to) ? options.to : [options.to];
+			return RNFileLogger.sendLogFilesByEmail({ ...options, to: toEmails });
 		} else {
-			return RNFileLogger.sendLogFilesByEmail(options);
+			return RNFileLogger.sendLogFilesByEmail({ ...options, to: undefined });
 		}
 	}
 
