@@ -32,7 +32,7 @@ import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 
-public class FileLoggerModule extends NativeRNFileLoggerSpec {
+public class FileLoggerModule extends NativeFileLoggerSpec {
     private static final int LOG_LEVEL_DEBUG = 0;
     private static final int LOG_LEVEL_INFO = 1;
     private static final int LOG_LEVEL_WARNING = 2;
@@ -52,7 +52,7 @@ public class FileLoggerModule extends NativeRNFileLoggerSpec {
     @NonNull
     @Override
     public String getName() {
-        return "RNFileLogger";
+        return "FileLogger";
     }
 
     @ReactMethod

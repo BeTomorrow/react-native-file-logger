@@ -1,7 +1,7 @@
-import type RNFileLoggerType from "./NativeRNFileLogger";
+import type RNFileLoggerType from "./NativeFileLogger";
 declare var global: any;
 
-const RNFileLogger: typeof RNFileLoggerType = require("./NativeRNFileLogger").default;
+const RNFileLogger: typeof RNFileLoggerType = require("./NativeFileLogger").default;
 
 export enum LogLevel {
 	Debug,
