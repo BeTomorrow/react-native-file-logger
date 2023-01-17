@@ -1,4 +1,5 @@
 #import "FileLogger.h"
+#import "FileLoggerSpec.h"
 
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -23,7 +24,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
+    return dispatch_get_main_queue();
 }
 
 RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -84,8 +85,8 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     NSString* body = options[@"body"];
     
     if (![MFMailComposeViewController canSendMail]) {
-       reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
-       return;
+        reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
+        return;
     }
     
     MFMailComposeViewController* composeViewController = [[MFMailComposeViewController alloc] init];
@@ -117,6 +118,12 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
     [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeFileLoggerSpecJSI>(params);
 }
 
 @end

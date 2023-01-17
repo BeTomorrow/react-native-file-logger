@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D65B70B924C03E92005AABD6 /* FileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = D65B70B724C03E92005AABD6 /* FileLogger.m */; };
-		D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.m */; };
+		D65B70B924C03E92005AABD6 /* FileLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65B70B724C03E92005AABD6 /* FileLogger.mm */; };
+		D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,10 +25,10 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFileLogger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFileLogger.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D65B70B724C03E92005AABD6 /* FileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileLogger.m; sourceTree = SOURCE_ROOT; };
+		D65B70B724C03E92005AABD6 /* FileLogger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileLogger.mm; sourceTree = SOURCE_ROOT; };
 		D65B70B824C03E92005AABD6 /* FileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileLogger.h; sourceTree = SOURCE_ROOT; };
 		D65B70BA24C113C1005AABD6 /* FileLoggerFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileLoggerFormatter.h; sourceTree = "<group>"; };
-		D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileLoggerFormatter.m; sourceTree = "<group>"; };
+		D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FileLoggerFormatter.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,9 +62,9 @@
 			isa = PBXGroup;
 			children = (
 				D65B70B824C03E92005AABD6 /* FileLogger.h */,
-				D65B70B724C03E92005AABD6 /* FileLogger.m */,
+				D65B70B724C03E92005AABD6 /* FileLogger.mm */,
 				D65B70BA24C113C1005AABD6 /* FileLoggerFormatter.h */,
-				D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.m */,
+				D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.mm */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -126,8 +126,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.m in Sources */,
-				D65B70B924C03E92005AABD6 /* FileLogger.m in Sources */,
+				D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.mm in Sources */,
+				D65B70B924C03E92005AABD6 /* FileLogger.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
