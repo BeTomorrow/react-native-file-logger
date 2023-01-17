@@ -16,7 +16,7 @@ public class FileLoggerPackage extends TurboReactPackage {
     @Nullable
     @Override
     public NativeModule getModule(String name, ReactApplicationContext reactApplicationContext) {
-        if (name.equals("RNFileLogger")) {
+        if (name.equals("FileLogger")) {
             return new FileLoggerModule(reactApplicationContext);
         } else {
             return null;
@@ -30,10 +30,10 @@ public class FileLoggerPackage extends TurboReactPackage {
                 final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
                 boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
                 moduleInfos.put(
-                        "RNFileLogger",
+                        "FileLogger",
                         new ReactModuleInfo(
-                                "RNFileLogger",
-                                "RNFileLogger",
+                                "FileLogger",
+                                "FileLogger",
                                 false, // canOverrideExistingModule
                                 false, // needsEagerInit
                                 true, // hasConstants

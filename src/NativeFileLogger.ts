@@ -22,4 +22,4 @@ export interface Spec extends TurboModule {
 	sendLogFilesByEmail(options: SendByEmailOptions): Promise<void>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>("RNFileLogger");
+export default TurboModuleRegistry.getEnforcing<Spec>("FileLogger");
