@@ -3,7 +3,6 @@ package com.betomorrow.rnfilelogger;
 import android.content.Intent;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import com.facebook.react.bridge.Arguments;
@@ -32,7 +31,8 @@ import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 
-public class FileLoggerModule extends NativeFileLoggerSpec {
+public class FileLoggerModule extends FileLoggerSpec {
+    public static final String NAME = "FileLogger";
     private static final int LOG_LEVEL_DEBUG = 0;
     private static final int LOG_LEVEL_INFO = 1;
     private static final int LOG_LEVEL_WARNING = 2;
@@ -49,10 +49,8 @@ public class FileLoggerModule extends NativeFileLoggerSpec {
         this.reactContext = reactContext;
     }
 
-    @NonNull
-    @Override
     public String getName() {
-        return "FileLogger";
+        return NAME;
     }
 
     @ReactMethod
@@ -118,7 +116,6 @@ public class FileLoggerModule extends NativeFileLoggerSpec {
         promise.resolve(null);
     }
 
-    @Override
     @ReactMethod
     public void write(double level, String str) {
         switch ((int) level) {
