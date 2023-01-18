@@ -1,5 +1,4 @@
 #import "FileLogger.h"
-#import "FileLoggerSpec.h"
 
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -64,11 +63,11 @@ RCT_EXPORT_METHOD(write:(NSNumber* _Nonnull)level str:(NSString*)str) {
     }
 }
 
-RCT_EXPORT_METHOD(getLogFilePaths:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getLogFilePaths:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     resolve(self.fileLogger.logFileManager.sortedLogFilePaths);
 }
 
-RCT_EXPORT_METHOD(deleteLogFiles:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(deleteLogFiles:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [self.fileLogger rollLogFileWithCompletionBlock:^{
         for (DDLogFileInfo* logFileInfo in [self.fileLogger.logFileManager unsortedLogFileInfos]) {
             if (logFileInfo.isArchived) {
@@ -120,11 +119,57 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
+// Don't compile this code when we build for the old architecture.
+#ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
     return std::make_shared<facebook::react::NativeFileLoggerSpecJSI>(params);
 }
+
+// Signature only used by the new architecture.
+- (void)configure:(JS::NativeFileLogger::NativeConfigureOptions &)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSString* logsDirectory = options.logsDirectory();
+    NSMutableDictionary * optionsDict = [NSMutableDictionary dictionary];
+    [optionsDict setValue:@(options.dailyRolling()) forKey:@"dailyRolling"];
+    [optionsDict setValue:@(options.maximumFileSize()) forKey:@"maximumFileSize"];
+    [optionsDict setValue:@(options.maximumNumberOfFiles()) forKey:@"maximumNumberOfFiles"];
+    if (logsDirectory) {
+        [optionsDict setValue:logsDirectory forKey:@"logsDirectory"];
+    }
+    [self configure:optionsDict resolver:resolve rejecter:reject];
+}
+
+
+- (void)sendLogFilesByEmail:(JS::NativeFileLogger::SendByEmailOptions &)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    NSDictionary * optionsDict = @{
+            @"subject": options.subject(),
+            @"body": options.body(),
+            @"to": convertToNSArray(options.to())
+        };
+    [self sendLogFilesByEmail:optionsDict resolver:resolve rejecter:reject];
+}
+
+
+- (void)write:(double)level msg:(NSString *)msg {
+    NSNumber* _Nonnull logLevel = [NSNumber numberWithInt:level];
+    [self write:logLevel str:msg];
+}
+
+NSArray<NSString *> *convertToNSArray(std::optional<FB::LazyVector<NSString *, id>> optional) {
+    if (optional.has_value()) {
+        FB::LazyVector<NSString *, id> value = optional.value();
+        NSMutableArray<NSString *> *result = [[NSMutableArray alloc] initWithCapacity:value.size()];
+        for (const auto &string : value) {
+            [result addObject:string];
+        }
+        return result;
+    } else {
+        return [[NSArray alloc] init];
+    }
+}
+#endif
+
 
 @end
 
