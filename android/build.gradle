@@ -12,7 +12,7 @@ buildscript {
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.5.3'
+            classpath 'com.android.tools.build:gradle:7.2.1'
         }
     }
 }
@@ -43,6 +43,19 @@ android {
     lintOptions {
         abortOnError false
     }
+    sourceSets {
+        main {
+        if (isNewArchitectureEnabled()) {
+            java.srcDirs += [
+            "src/turbo",
+            // This is needed to build Kotlin project with NewArch enabled
+            "${project.buildDir}/generated/source/codegen/java"
+            ]
+        } else {
+            java.srcDirs += ["src/legacy"]
+        }
+        }
+    }
 }
 
 repositories {
@@ -58,7 +71,7 @@ repositories {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'  // From node_modules
+    implementation "com.facebook.react:react-native:+"
     implementation 'org.slf4j:slf4j-api:1.7.33'
     implementation 'com.github.tony19:logback-android:2.0.0'
 }

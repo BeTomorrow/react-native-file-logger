@@ -90,8 +90,8 @@ def reactNativeArchitectures() {
 
 android {
     ndkVersion rootProject.ext.ndkVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.reactnativefileloggerexample"
     defaultConfig {
