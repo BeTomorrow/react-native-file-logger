@@ -28,8 +28,8 @@ For react-native 0.71 and higher, next version is compatible with current and ne
 npm i react-native-file-logger@next
 # New architecture
 cd ios && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
-# Current architecture (backward compatibility)
-npx pod-install
+# OR, if you are using current architecture (backward compatibility)
+# npx pod-install
 ```
 
 ## Getting started
