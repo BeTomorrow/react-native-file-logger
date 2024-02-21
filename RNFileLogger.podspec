@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/BeTomorrow/react-native-file-logger.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,mm}"
+  s.framework    = "MessageUI"
   
   s.dependency "React-Core"
   s.dependency "CocoaLumberjack"
