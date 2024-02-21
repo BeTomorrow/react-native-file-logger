@@ -25,12 +25,16 @@ npx pod-install
 For react-native 0.71 and higher, next version is compatible with current and new architecture.
 
 ```sh
-npm i react-native-file-logger@next
+npm i react-native-file-logger
 # New architecture
 cd ios && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
 # OR, if you are using current architecture (backward compatibility)
 # npx pod-install
 ```
+
+### React-Native 0.69 and under
+
+For older React-native version, use version `v0.4.1`
 
 ## Getting started
 
