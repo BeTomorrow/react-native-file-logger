@@ -25,6 +25,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
@@ -33,6 +34,7 @@ import ch.qos.logback.core.util.FileSize;
 
 public class FileLoggerModule extends FileLoggerSpec {
     public static final String NAME = "FileLogger";
+    public static final String APPENDER_NAME = "FileLoggerAppender";
     private static final int LOG_LEVEL_DEBUG = 0;
     private static final int LOG_LEVEL_INFO = 1;
     private static final int LOG_LEVEL_WARNING = 2;
@@ -68,6 +70,7 @@ public class FileLoggerModule extends FileLoggerSpec {
 
         RollingFileAppender<ILoggingEvent> rollingFileAppender = new RollingFileAppender<>();
         rollingFileAppender.setContext(loggerContext);
+        rollingFileAppender.setName(APPENDER_NAME);
         rollingFileAppender.setFile(logsDirectory + "/" + logPrefix + "-latest.log");
 
         if (dailyRolling) {
@@ -107,13 +110,22 @@ public class FileLoggerModule extends FileLoggerSpec {
         rollingFileAppender.setEncoder(encoder);
         rollingFileAppender.start();
 
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.DEBUG);
-        root.detachAndStopAllAppenders();
-        root.addAppender(rollingFileAppender);
+        this.renewAppender(rollingFileAppender);
 
         configureOptions = options;
         promise.resolve(null);
+    }
+
+    private void renewAppender(Appender appender) {
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.DEBUG);
+        // Stopping the previous appender to release any resources it might be holding (file handles) and to ensure a clean shutdown.
+        Appender previousFileLoggerAppender = root.getAppender(APPENDER_NAME);
+        if (previousFileLoggerAppender != null) {
+            previousFileLoggerAppender.stop();
+            root.detachAppender(APPENDER_NAME);
+        }
+        root.addAppender(appender);
     }
 
     @ReactMethod
