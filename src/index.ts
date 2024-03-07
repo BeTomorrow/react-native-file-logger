@@ -3,7 +3,6 @@ import type RNFileLoggerType from "./NativeFileLogger";
 declare var global: any;
 
 const isTurboModuleEnabled = global.__turboModuleProxy != null;
-console.log(`TurboModule enabled: ${isTurboModuleEnabled}`);
 const RNFileLogger: typeof RNFileLoggerType = isTurboModuleEnabled
 	? require("./NativeFileLogger").default
 	: NativeModules.FileLogger;
