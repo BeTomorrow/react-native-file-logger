@@ -31,6 +31,10 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     NSNumber* maximumFileSize = options[@"maximumFileSize"];
     NSNumber* maximumNumberOfFiles = options[@"maximumNumberOfFiles"];
     NSString* logsDirectory = options[@"logsDirectory"];
+
+    if (self.fileLogger) {
+        [DDLog removeLogger:self.fileLogger];
+    }
     
     id<DDLogFileManager> fileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirectory];
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
@@ -40,7 +44,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     fileLogger.logFormatter = [[FileLoggerFormatter alloc] init];
     fileLogger.rollingFrequency = [dailyRolling boolValue] ? 24 * 60 * 60 : 0;
     fileLogger.maximumFileSize = [maximumFileSize unsignedIntegerValue];
-    [DDLog removeAllLoggers];
+
     [DDLog addLogger:fileLogger];
     self.fileLogger = fileLogger;
     
