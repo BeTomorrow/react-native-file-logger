@@ -66,6 +66,14 @@ public class FileLoggerModule extends FileLoggerSpec {
                 : reactContext.getExternalCacheDir() + "/logs";
         String logPrefix = reactContext.getPackageName();
 
+        FileLoggerModule.configure(dailyRolling, maximumFileSize, maximumNumberOfFiles, logsDirectory, logPrefix);
+
+        configureOptions = options;
+        promise.resolve(null);
+    }
+
+
+    public static void configure(boolean dailyRolling, int maximumFileSize, int maximumNumberOfFiles, String logsDirectory, String logPrefix) {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         RollingFileAppender<ILoggingEvent> rollingFileAppender = new RollingFileAppender<>();
@@ -108,15 +116,14 @@ public class FileLoggerModule extends FileLoggerSpec {
         encoder.start();
 
         rollingFileAppender.setEncoder(encoder);
+
+        FileLoggerModule.renewAppender(rollingFileAppender);
+
         rollingFileAppender.start();
 
-        this.renewAppender(rollingFileAppender);
-
-        configureOptions = options;
-        promise.resolve(null);
     }
 
-    private void renewAppender(Appender appender) {
+    private static void renewAppender(Appender appender) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.DEBUG);
         // Stopping the previous appender to release any resources it might be holding (file handles) and to ensure a clean shutdown.
