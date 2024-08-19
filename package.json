@@ -38,9 +38,11 @@
 	},
 	"devDependencies": {
 		"@babel/preset-env": "^7.19.0",
+		"@release-it/conventional-changelog": "^8.0.1",
 		"prettier": "^2.7.1",
 		"react": "^18.2.0",
 		"react-native": "0.71.1",
+		"release-it": "^17.6.0",
 		"rimraf": "^3.0.2",
 		"typescript": "^4.8.2"
 	},
@@ -50,6 +52,52 @@
 		"jsSrcsDir": "src",
 		"android": {
 			"javaPackageName": "com.betomorrow.rnfilelogger"
+		}
+	},
+	"release-it": {
+		"hooks": {
+			"before:init": [
+				"npm run build"
+			]
+		},
+		"git": {
+			"commitMessage": "chore: release ${version}",
+			"tagName": "v${version}"
+		},
+		"npm": {
+			"publish": true
+		},
+		"github": {
+			"release": true
+		},
+		"plugins": {
+			"@release-it/conventional-changelog": {
+				"preset": {
+					"name": "conventionalcommits",
+					"types": [
+						{
+							"type": "feat",
+							"section": "✨ Features"
+						},
+						{
+							"type": "fix",
+							"section": "🐛 Bug Fixes"
+						},
+						{
+							"type": "chore(deps)",
+							"section": "🛠️ Dependency Upgrades"
+						},
+						{
+							"type": "chore",
+							"section": "🧹 Chore"
+						},
+						{
+							"type": "docs",
+							"section": "📚 Documentation"
+						}
+					]
+				}
+			}
 		}
 	}
 }
