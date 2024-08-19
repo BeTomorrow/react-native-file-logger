@@ -12,7 +12,7 @@ buildscript {
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:7.2.1'
+            classpath 'com.android.tools.build:gradle:7.2.2'
         }
     }
 }
@@ -39,6 +39,7 @@ android {
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         versionCode 1
         versionName "1.0"
+        consumerProguardFiles 'logback-rules.pro'
     }
     lintOptions {
         abortOnError false
