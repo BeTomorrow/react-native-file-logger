@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/BeTomorrow/react-native-file-logger"
   s.license      = "MIT"
   s.authors      = { "BeTomorrow" => "streny@betomorrow.com" }
-  s.platforms    = { :ios => "11.0" }
+  s.platforms    = { :ios => "11.0", :visionos => "1.0" }
   s.source       = { :git => "https://github.com/BeTomorrow/react-native-file-logger.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,mm}"
