@@ -1,3 +1,5 @@
+import com.android.Version
+
 def DEFAULT_COMPILE_SDK_VERSION = 30
 def DEFAULT_BUILD_TOOLS_VERSION = '30.0.2'
 def DEFAULT_MIN_SDK_VERSION = 16
@@ -30,7 +32,29 @@ if (isNewArchitectureEnabled()) {
   apply plugin: 'com.facebook.react'
 }
 
+// https://github.com/react-native-community/discussions-and-proposals/issues/671
+// https://developer.android.com/build/releases/past-releases/agp-8-0-0-release-notes#namespace-dsl
+// Namespace is required in module-level when AGP version >=7.3
+def supportsNamespace() {
+    def parsed = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
+    def major = parsed[0].toInteger()
+    def minor = parsed[1].toInteger()
+
+    // Namespace support was added in 7.3.0
+    return (major == 7 && minor >= 3) || major >= 8
+}
+
 android {
+    if (supportsNamespace()) {
+        namespace "com.betomorrow.rnfilelogger"
+
+        sourceSets {
+            main {
+                manifest.srcFile "src/main/AndroidManifestNew.xml"
+            }
+        }
+    }
+
     compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
     buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
     defaultConfig {
