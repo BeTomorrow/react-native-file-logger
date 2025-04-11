@@ -1,4 +1,6 @@
 import { NativeModules } from "react-native";
+import util from "util";
+
 import type RNFileLoggerType from "./NativeFileLogger";
 declare var global: any;
 
@@ -35,6 +37,12 @@ export interface SendByEmailOptions {
 class FileLoggerStatic {
 	private _logLevel = LogLevel.Debug;
 	private _formatter = defaultFormatter;
+	private _originalConsole: {
+		debug: typeof console.debug;
+		log: typeof console.log;
+		warn: typeof console.warn;
+		error: typeof console.error;
+	} | null = null;
 
 	async configure(options: ConfigureOptions = {}): Promise<void> {
 		const {
@@ -63,13 +71,44 @@ class FileLoggerStatic {
 	}
 
 	enableConsoleCapture() {
-		// __inspectorLog is an undocumented feature of React Native
-		// that allows to intercept calls to console.debug/log/warn/error
-		global.__inspectorLog = this._handleLog;
+		// Store original console methods
+		this._originalConsole = {
+			debug: console.debug,
+			log: console.log,
+			warn: console.warn,
+			error: console.error,
+		};
+
+		// Override console methods
+		console.debug = (...args: any[]) => {
+			this._handleLog('debug', util.format(...args));
+			this._originalConsole?.debug(...args);
+		};
+
+		console.log = (...args: any[]) => {
+			this._handleLog('log', util.format(...args));
+			this._originalConsole?.log(...args);
+		};
+
+		console.warn = (...args: any[]) => {
+			this._handleLog('warning', util.format(...args));
+			this._originalConsole?.warn(...args);
+		};
+
+		console.error = (...args: any[]) => {
+			this._handleLog('error', util.format(...args));
+			this._originalConsole?.error(...args);
+		};
 	}
 
 	disableConsoleCapture() {
-		global.__inspectorLog = undefined;
+		if (this._originalConsole) {
+			console.debug = this._originalConsole.debug;
+			console.log = this._originalConsole.log;
+			console.warn = this._originalConsole.warn;
+			console.error = this._originalConsole.error;
+			this._originalConsole = null;
+		}
 	}
 
 	setLogLevel(logLevel: LogLevel) {
