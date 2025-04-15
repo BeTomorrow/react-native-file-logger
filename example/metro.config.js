@@ -1,14 +1,9 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const path = require('path');
+const { getDefaultConfig } = require("expo/metro-config");
+const path = require("path");
 
-/**
- * Metro configuration
- * https://facebook.github.io/metro/docs/configuration
- *
- * @type {import('metro-config').MetroConfig}
- */
-const config = {
-  watchFolders: [__dirname, path.join(__dirname, '..')],
-};
+const projectRoot = __dirname;
+const config = getDefaultConfig(projectRoot);
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+config.watchFolders = [projectRoot, path.resolve(projectRoot, "..")];
+
+module.exports = config;
