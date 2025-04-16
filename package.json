@@ -4,6 +4,7 @@
 	"version": "0.5.7",
 	"description": "A simple file-logger for React Native",
 	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"source": "src/index.ts",
 	"files": [
 		"README.md",
@@ -22,13 +23,11 @@
 		"url": "git+https://github.com/BeTomorrow/react-native-file-logger.git",
 		"baseUrl": "https://github.com/BeTomorrow/react-native-file-logger"
 	},
+	"homepage": "https://github.com/BeTomorrow/react-native-file-logger#readme",
 	"keywords": [
 		"react-native"
 	],
-	"author": {
-		"name": "BeTomorrow",
-		"email": "streny@betomorrow.com"
-	},
+	"author": "BeTomorrow <aguichard@betomorrow.com> (https://github.com/BeTomorrow)",
 	"license": "MIT",
 	"licenseFilename": "LICENSE",
 	"readmeFilename": "README.md",
