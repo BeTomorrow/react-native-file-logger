@@ -4,10 +4,10 @@ _A simple file-logger for React Native with configurable rolling policy, based o
 
 ## Features
 
-- **💆‍♂️ Easy to setup**: Just call `FileLogger.configure()` and you're done. All your existing `console.log/debug/...` calls are automatically logged into a file
+- **💆‍♂️ Easy to setup**: Just call `FileLogger.configure()` and you're done. All your existing `console.log/debug/...` calls are automatically logged into a file.
 - **🌀 File rolling**: Support for time and size-based file rolling. Max number of files and size-limit can be configured. File rolling can also be disabled.
-- **📬 Email support**: Logging into a file is useless if users cannot send logs back to developers. With react-native-file-logger, file logs can be sent by email without having to rely on another library
-- **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings
+- **📬 Email support**: Logging into a file is useless if users cannot send logs back to developers. With react-native-file-logger, file logs can be sent by email without having to rely on another library.
+- **🛠 TypeScript support**: Being written entirely in TypeScript, react-native-file-logger has always up-to-date typings.
 
 ## How it works
 
@@ -18,18 +18,6 @@ React-native-file-logger overrides the default `console` functions to capture lo
 ```sh
 npm i react-native-file-logger
 npx pod-install
-```
-
-### New architecture
-
-For react-native 0.71 and higher, next version is compatible with current and new architecture.
-
-```sh
-npm i react-native-file-logger
-# New architecture
-cd ios && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
-# OR, if you are using current architecture (backward compatibility)
-# npx pod-install
 ```
 
 ## Getting started
