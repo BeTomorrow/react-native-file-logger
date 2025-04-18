@@ -4,6 +4,7 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <MessageUI/MessageUI.h>
 #import "FileLoggerFormatter.h"
+#import <SSZipArchive/SSZipArchive.h>
 
 enum LogLevel {
     LOG_LEVEL_DEBUG,
@@ -87,7 +88,8 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     NSArray<NSString*>* to = options[@"to"];
     NSString* subject = options[@"subject"];
     NSString* body = options[@"body"];
-    
+    NSNumber* compressFiles = options[@"compressFiles"];
+
     if (![MFMailComposeViewController canSendMail]) {
         reject(@"CannotSendMail", @"Cannot send emails on this device", nil);
         return;
@@ -106,9 +108,27 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     }
     
     NSArray<NSString*>* logFiles = self.fileLogger.logFileManager.sortedLogFilePaths;
-    for (NSString* logFile in logFiles) {
-        NSData* data = [NSData dataWithContentsOfFile:logFile];
-        [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
+    
+    if ([compressFiles boolValue]) {
+        // Create a temporary directory for the zip file
+        NSString* tempDir = NSTemporaryDirectory();
+        NSString* zipPath = [tempDir stringByAppendingPathComponent:@"logs.zip"];
+        
+        // Create zip file containing all log files
+        [SSZipArchive createZipFileAtPath:zipPath withFilesAtPaths:logFiles];
+        
+        // Add the zip file as attachment
+        NSData* zipData = [NSData dataWithContentsOfFile:zipPath];
+        [composeViewController addAttachmentData:zipData mimeType:@"application/zip" fileName:@"logs.zip"];
+        
+        // Clean up the temporary zip file
+        [[NSFileManager defaultManager] removeItemAtPath:zipPath error:nil];
+    } else {
+        // Add each log file as a separate attachment
+        for (NSString* logFile in logFiles) {
+            NSData* data = [NSData dataWithContentsOfFile:logFile];
+            [composeViewController addAttachmentData:data mimeType:@"text/plain" fileName:[logFile lastPathComponent]];
+        }
     }
     
     UIViewController* presentingViewController = UIApplication.sharedApplication.delegate.window.rootViewController;
@@ -134,28 +154,32 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
 
 // Signature only used by the new architecture.
 - (void)configure:(JS::NativeFileLogger::NativeConfigureOptions &)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    NSString* logsDirectory = options.logsDirectory();
     NSMutableDictionary * optionsDict = [NSMutableDictionary dictionary];
+
     [optionsDict setValue:@(options.dailyRolling()) forKey:@"dailyRolling"];
     [optionsDict setValue:@(options.maximumFileSize()) forKey:@"maximumFileSize"];
     [optionsDict setValue:@(options.maximumNumberOfFiles()) forKey:@"maximumNumberOfFiles"];
+    NSString* logsDirectory = options.logsDirectory();
     if (logsDirectory) {
         [optionsDict setValue:logsDirectory forKey:@"logsDirectory"];
     }
+
     [self configure:optionsDict resolver:resolve rejecter:reject];
 }
 
-
+// Signature only used by the new architecture.
 - (void)sendLogFilesByEmail:(JS::NativeFileLogger::SendByEmailOptions &)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    NSDictionary * optionsDict = @{
-            @"subject": options.subject(),
-            @"body": options.body(),
-            @"to": convertToNSArray(options.to())
-        };
+    NSMutableDictionary * optionsDict = [NSMutableDictionary dictionary];
+    
+    [optionsDict setValue:options.subject() forKey:@"subject"];
+    [optionsDict setValue:options.body() forKey:@"body"];
+    [optionsDict setValue:convertToNSArray(options.to()) forKey:@"to"];
+    [optionsDict setValue:@(options.compressFiles()) forKey:@"compressFiles"];
+
     [self sendLogFilesByEmail:optionsDict resolver:resolve rejecter:reject];
 }
 
-
+// Signature only used by the new architecture.
 - (void)write:(double)level msg:(NSString *)msg {
     NSNumber* _Nonnull logLevel = [NSNumber numberWithInt:level];
     [self write:logLevel str:msg];

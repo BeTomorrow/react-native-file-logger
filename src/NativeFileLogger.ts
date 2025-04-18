@@ -12,6 +12,7 @@ export type SendByEmailOptions = {
 	to?: string[];
 	subject?: string;
 	body?: string;
+	compressFiles: boolean;
 };
 
 export interface Spec extends TurboModule {

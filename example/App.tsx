@@ -5,9 +5,12 @@ import { FileLogger, LogLevel } from "react-native-file-logger";
 export const App = () => {
 	const [logLevel, setLogLevel] = useState(LogLevel.Debug);
 	const [enabled, setEnabled] = useState(true);
+	const [count, setCount] = useState(0);
 
 	useEffect(() => {
-		FileLogger.configure({ logLevel: LogLevel.Debug }).then(() => console.log("File-logger configured"));
+		FileLogger.configure({ logLevel: LogLevel.Debug, maximumFileSize: 1024 }).then(() =>
+			console.log("File-logger configured")
+		);
 	}, []);
 
 	const showLogFilePaths = async () => {
@@ -34,6 +37,7 @@ export const App = () => {
 			to: "john@doe.com",
 			subject: "Log files",
 			body: "Please find attached the log files from your app",
+			compressFiles: true,
 		});
 	};
 
@@ -67,13 +71,31 @@ export const App = () => {
 		<View style={styles.container}>
 			<View style={styles.buttonContainer}>
 				<View style={styles.button}>
-					<Button title="Log info" onPress={() => console.log("Log info", { nested: { data: 123 } })} />
+					<Button
+						title="Log info"
+						onPress={() => {
+							console.log("Log info", { nested: { count } });
+							setCount(c => c + 1);
+						}}
+					/>
 				</View>
 				<View style={styles.button}>
-					<Button title="Log warning" onPress={() => console.warn("Log warning", { nested: { data: 456 } })} />
+					<Button
+						title="Log warning"
+						onPress={() => {
+							console.warn("Log warning", { nested: { count } });
+							setCount(c => c + 1);
+						}}
+					/>
 				</View>
 				<View style={styles.button}>
-					<Button title="Log error" onPress={() => console.error("Log error", { nested: { data: 789 } })} />
+					<Button
+						title="Log error"
+						onPress={() => {
+							console.error("Log error", { nested: { count } });
+							setCount(c => c + 1);
+						}}
+					/>
 				</View>
 				<View style={styles.button}>
 					<Button title="Log large data" onPress={() => massiveLogging()} />

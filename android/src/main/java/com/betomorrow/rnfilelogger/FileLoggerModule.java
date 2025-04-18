@@ -18,8 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -185,6 +188,7 @@ public class FileLoggerModule extends FileLoggerSpec {
             ReadableArray to = options.hasKey("to") ? options.getArray("to") : null;
             String subject = options.hasKey("subject") ? options.getString("subject") : null;
             String body = options.hasKey("body") ? options.getString("body") : null;
+            boolean compressFiles = options.hasKey("compressFiles") && options.getBoolean("compressFiles");
 
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE, Uri.parse("mailto:"));
             intent.setType("plain/text");
@@ -200,13 +204,38 @@ public class FileLoggerModule extends FileLoggerSpec {
             }
 
             ArrayList<Uri> uris = new ArrayList<>();
-            for (File file : getLogFiles()) {
-                Uri fileUri = FileProvider.getUriForFile(
+            File[] logFiles = getLogFiles();
+
+            if (compressFiles && logFiles.length > 0) {
+                // Create a zip file containing all log files
+                File zipFile = new File(logsDirectory, "logs.zip");
+                try (FileOutputStream fos = new FileOutputStream(zipFile);
+                     ZipOutputStream zos = new ZipOutputStream(fos)) {
+                    
+                    for (File logFile : logFiles) {
+                        ZipEntry zipEntry = new ZipEntry(logFile.getName());
+                        zos.putNextEntry(zipEntry);
+                        java.nio.file.Files.copy(logFile.toPath(), zos);
+                        zos.closeEntry();
+                    }
+                }
+
+                Uri zipUri = FileProvider.getUriForFile(
+                    reactContext,
+                    reactContext.getApplicationContext().getPackageName() + ".provider",
+                    zipFile);
+                uris.add(zipUri);
+            } else {
+                // Send individual log files
+                for (File file : logFiles) {
+                    Uri fileUri = FileProvider.getUriForFile(
                         reactContext,
                         reactContext.getApplicationContext().getPackageName() + ".provider",
                         file);
-                uris.add(fileUri);
+                    uris.add(fileUri);
+                }
             }
+
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             

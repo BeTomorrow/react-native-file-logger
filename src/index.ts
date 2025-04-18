@@ -30,6 +30,7 @@ export interface SendByEmailOptions {
 	to?: string | string[];
 	subject?: string;
 	body?: string;
+	compressFiles?: boolean;
 }
 
 class FileLoggerStatic {
@@ -134,12 +135,13 @@ class FileLoggerStatic {
 	}
 
 	sendLogFilesByEmail(options: SendByEmailOptions = {}): Promise<void> {
-		if (options.to) {
-			const toEmails = Array.isArray(options.to) ? options.to : [options.to];
-			return RNFileLogger.sendLogFilesByEmail({ ...options, to: toEmails });
-		} else {
-			return RNFileLogger.sendLogFilesByEmail({ ...options, to: undefined });
-		}
+		const { to, subject, body, compressFiles = false } = options;
+		return RNFileLogger.sendLogFilesByEmail({
+			to: to ? (Array.isArray(to) ? to : [to]) : undefined,
+			subject,
+			body,
+			compressFiles,
+		});
 	}
 
 	debug(msg: string) {

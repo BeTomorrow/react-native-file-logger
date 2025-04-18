@@ -50,11 +50,12 @@ Initialize the file-logger with the specified options. As soon as the returned p
 
 Send all log files by email. On iOS, it uses `MFMailComposeViewController` to ensure that the user won't leave the app when sending log files.
 
-| Option    | Description                          |
-| --------- | ------------------------------------ |
-| `to`      | Email address of the recipient       |
-| `subject` | Email subject                        |
-| `body`    | Plain text body message of the email |
+| Option     | Description                                                                                                           |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| `to`       | Email address of the recipient                                                                                        |
+| `subject`  | Email subject                                                                                                         |
+| `body`     | Plain text body message of the email                                                                                  |
+| `compress` | If `true`, log files will be compressed into a single zip file before being attached to the email, default to `false` |
 
 #### FileLogger.enableConsoleCapture()
 
