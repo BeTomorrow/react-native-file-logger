@@ -9,14 +9,14 @@
 		"web": "expo start --web"
 	},
 	"dependencies": {
-		"expo": "53.0.0-canary-20250408-7f0ab53",
+		"expo": "~53.0.0",
 		"react": "19.0.0",
-		"react-native": "0.79.0",
+		"react-native": "0.79.2",
 		"react-native-file-logger": "file:.."
 	},
 	"devDependencies": {
 		"@babel/core": "^7.25.2",
-		"@types/react": "^19.0.0",
+		"@types/react": "~19.0.10",
 		"typescript": "^5.3.3"
 	},
 	"private": true

@@ -14,8 +14,7 @@
 		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.anonymous.reactnativefileloggerexample",
-			"appleTeamId": "3UL6Q9AVDJ"
+			"bundleIdentifier": "com.anonymous.reactnativefileloggerexample"
 		},
 		"android": {
 			"adaptiveIcon": {
