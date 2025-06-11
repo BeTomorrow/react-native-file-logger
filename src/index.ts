@@ -2,7 +2,7 @@ import { NativeModules } from "react-native";
 import util from "util";
 import type RNFileLoggerType from "./NativeFileLogger";
 
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+const isTurboModuleEnabled = (global as any).__turboModuleProxy != null;
 const RNFileLogger: typeof RNFileLoggerType = isTurboModuleEnabled
 	? require("./NativeFileLogger").default
 	: NativeModules.FileLogger;
