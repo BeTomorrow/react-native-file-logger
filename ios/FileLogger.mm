@@ -17,6 +17,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
 @interface FileLogger () <MFMailComposeViewControllerDelegate>
 @property (nonatomic, strong) DDFileLogger* fileLogger;
+
 @end
 
 @implementation FileLogger
@@ -143,7 +144,12 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
-
+- (void)dealloc
+{
+    if (self.fileLogger) {
+        [DDLog removeLogger:self.fileLogger];
+    }
+}
 // Don't compile this code when we build for the old architecture.
 #ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
