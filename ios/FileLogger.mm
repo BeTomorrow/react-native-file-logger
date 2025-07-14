@@ -1,4 +1,5 @@
 #import "FileLogger.h"
+#import "Log.h"
 
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -38,7 +39,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
         [DDLog removeLogger:self.fileLogger];
     }
     
-    id<DDLogFileManager> fileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirectory];
+    id<DDLogFileManager> fileManager = [[CustomLogFileManager alloc] initWithLogsDirectory:logsDirectory fileName:logPrefix];
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
     fileManager.logFilesDiskQuota = 0;
     
