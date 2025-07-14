@@ -24,6 +24,7 @@ export interface ConfigureOptions {
 	maximumFileSize?: number;
 	maximumNumberOfFiles?: number;
 	logsDirectory?: string;
+	logPrefix?: string;
 }
 
 export interface SendByEmailOptions {
