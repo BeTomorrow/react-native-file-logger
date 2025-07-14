@@ -54,6 +54,7 @@ class FileLoggerStatic {
 			maximumFileSize = 1024 * 1024,
 			maximumNumberOfFiles = 5,
 			logsDirectory,
+			logPrefix,
 		} = options;
 
 		await RNFileLogger.configure({
@@ -61,6 +62,7 @@ class FileLoggerStatic {
 			maximumFileSize,
 			maximumNumberOfFiles,
 			logsDirectory,
+			logPrefix,
 		});
 
 		this._logLevel = logLevel;
