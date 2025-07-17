@@ -6,6 +6,7 @@ export type NativeConfigureOptions = {
 	maximumFileSize: number;
 	maximumNumberOfFiles: number;
 	logsDirectory?: string;
+	logPrefix?: string;
 };
 
 export type SendByEmailOptions = {

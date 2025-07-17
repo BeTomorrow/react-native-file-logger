@@ -1,5 +1,4 @@
 #import "FileLogger.h"
-
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <MessageUI/MessageUI.h>
@@ -12,6 +11,63 @@ enum LogLevel {
     LOG_LEVEL_WARNING,
     LOG_LEVEL_ERROR
 };
+
+// Log.h
+@interface CustomLogFileManager : DDLogFileManagerDefault
+@property (nonatomic, copy) NSString *fileName;
+
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory fileName:(NSString *)name;
+
+@end
+
+@implementation CustomLogFileManager
+
+#pragma mark - Lifecycle method
+
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory
+                             fileName:(NSString *)name
+{
+    self = [super initWithLogsDirectory:logsDirectory];
+    if (self) {
+        self.fileName = name;
+    }
+    return self;
+}
+
+#pragma mark - Override methods
+
+- (NSString *)newLogFileName
+{
+     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+    NSString *timestamp = [formatter stringFromDate:[NSDate date]];
+
+    if (self.fileName && [self.fileName length]) {
+        return [NSString stringWithFormat:@"%@.log", self.fileName];
+    }
+    NSString *appName = self.fileName;
+    if (!appName || appName.length == 0) {
+        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+    }
+    if (!appName || appName.length == 0) {
+        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+    }
+    return [NSString stringWithFormat:@"%@_%@.log", appName, timestamp];
+}
+
+- (BOOL)isLogFile:(NSString *)fileName
+{
+    NSString *appName = self.fileName;
+    if (!appName || appName.length == 0) {
+        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+    }
+    if (!appName || appName.length == 0) {
+        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+    }
+    return [fileName hasPrefix: appName];
+}
+
+@end
 
 static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 
@@ -33,12 +89,12 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     NSNumber* maximumFileSize = options[@"maximumFileSize"];
     NSNumber* maximumNumberOfFiles = options[@"maximumNumberOfFiles"];
     NSString* logsDirectory = options[@"logsDirectory"];
-
+    NSString* logPrefix = options[@"logPrefix"];
     if (self.fileLogger) {
         [DDLog removeLogger:self.fileLogger];
     }
     
-    id<DDLogFileManager> fileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirectory];
+    id<DDLogFileManager> fileManager = [[CustomLogFileManager alloc] initWithLogsDirectory:logsDirectory fileName:logPrefix];
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
     fileManager.logFilesDiskQuota = 0;
     
@@ -168,6 +224,10 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     NSString* logsDirectory = options.logsDirectory();
     if (logsDirectory) {
         [optionsDict setValue:logsDirectory forKey:@"logsDirectory"];
+    }
+    NSString* logPrefix = options.logPrefix();
+    if (logPrefix) {
+        [optionsDict setValue:logPrefix forKey:@"logPrefix"];
     }
 
     [self configure:optionsDict resolver:resolve rejecter:reject];
