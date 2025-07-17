@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0EA8D7102E25040700A72487 /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EA8D70F2E25040700A72487 /* Log.m */; };
 		D65B70B924C03E92005AABD6 /* FileLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65B70B724C03E92005AABD6 /* FileLogger.mm */; };
 		D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.mm in Sources */ = {isa = PBXBuildFile; fileRef = D65B70BB24C113C1005AABD6 /* FileLoggerFormatter.mm */; };
 /* End PBXBuildFile section */
@@ -25,8 +24,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0EA8D70E2E25040700A72487 /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = SOURCE_ROOT; };
-		0EA8D70F2E25040700A72487 /* Log.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Log.m; sourceTree = SOURCE_ROOT; };
 		134814201AA4EA6300B7C361 /* libFileLogger.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFileLogger.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D65B70B724C03E92005AABD6 /* FileLogger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileLogger.mm; sourceTree = SOURCE_ROOT; };
 		D65B70B824C03E92005AABD6 /* FileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileLogger.h; sourceTree = SOURCE_ROOT; };
@@ -64,8 +61,6 @@
 		D65B70B624C03E6D005AABD6 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				0EA8D70E2E25040700A72487 /* Log.h */,
-				0EA8D70F2E25040700A72487 /* Log.m */,
 				D65B70B824C03E92005AABD6 /* FileLogger.h */,
 				D65B70B724C03E92005AABD6 /* FileLogger.mm */,
 				D65B70BA24C113C1005AABD6 /* FileLoggerFormatter.h */,
@@ -131,7 +126,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0EA8D7102E25040700A72487 /* Log.m in Sources */,
 				D65B70BC24C113C1005AABD6 /* FileLoggerFormatter.mm in Sources */,
 				D65B70B924C03E92005AABD6 /* FileLogger.mm in Sources */,
 			);
