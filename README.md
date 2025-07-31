@@ -45,6 +45,7 @@ Initialize the file-logger with the specified options. As soon as the returned p
 | `maximumFileSize`      | A new log file is created when current log file exceeds the given size in bytes. `0` to disable                                                                                           | `1024 * 1024` (1MB)                        |
 | `maximumNumberOfFiles` | Maximum number of log files to keep. When a new log file is created, if the total number of files exceeds this limit, the oldest file is deleted. `0` to disable                          | `5`                                        |
 | `logsDirectory`        | Absolute path of directory where log files are stored. If not defined, log files are stored in the cache directory of the app                                                             | `undefined`                                |
+| `logPrefix`            | Optional prefix string to prepend to log file names                                                                                                                                       | `undefined`                                |
 
 #### FileLogger.sendLogFilesByEmail(options?): Promise
 
