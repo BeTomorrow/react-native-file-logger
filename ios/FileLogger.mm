@@ -3,8 +3,9 @@
 #define LOG_LEVEL_DEF ddLogLevel
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <MessageUI/MessageUI.h>
-#import "FileLoggerFormatter.h"
 #import <SSZipArchive/SSZipArchive.h>
+#import "FileLoggerFormatter.h"
+#import "CustomLogFileManager.h"
 
 enum LogLevel {
     LOG_LEVEL_DEBUG,
@@ -33,12 +34,12 @@ RCT_EXPORT_METHOD(configure:(NSDictionary*)options resolver:(RCTPromiseResolveBl
     NSNumber* maximumFileSize = options[@"maximumFileSize"];
     NSNumber* maximumNumberOfFiles = options[@"maximumNumberOfFiles"];
     NSString* logsDirectory = options[@"logsDirectory"];
-
+    NSString* logPrefix = options[@"logPrefix"];
     if (self.fileLogger) {
         [DDLog removeLogger:self.fileLogger];
     }
     
-    id<DDLogFileManager> fileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:logsDirectory];
+    id<DDLogFileManager> fileManager = [[CustomLogFileManager alloc] initWithLogsDirectory:logsDirectory fileName:logPrefix];
     fileManager.maximumNumberOfLogFiles = [maximumNumberOfFiles unsignedIntegerValue];
     fileManager.logFilesDiskQuota = 0;
     
@@ -168,6 +169,10 @@ RCT_EXPORT_METHOD(sendLogFilesByEmail:(NSDictionary*)options resolver:(RCTPromis
     NSString* logsDirectory = options.logsDirectory();
     if (logsDirectory) {
         [optionsDict setValue:logsDirectory forKey:@"logsDirectory"];
+    }
+    NSString* logPrefix = options.logPrefix();
+    if (logPrefix) {
+        [optionsDict setValue:logPrefix forKey:@"logPrefix"];
     }
 
     [self configure:optionsDict resolver:resolve rejecter:reject];

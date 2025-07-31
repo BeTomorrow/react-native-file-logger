@@ -63,11 +63,15 @@ public class FileLoggerModule extends FileLoggerSpec {
         boolean dailyRolling = options.getBoolean("dailyRolling");
         int maximumFileSize = options.getInt("maximumFileSize");
         int maximumNumberOfFiles = options.getInt("maximumNumberOfFiles");
+       
 
         logsDirectory = options.hasKey("logsDirectory")
                 ? options.getString("logsDirectory")
                 : reactContext.getExternalCacheDir() + "/logs";
-        String logPrefix = reactContext.getPackageName();
+        String logPrefix = options.hasKey("logPrefix")
+                ? options.getString("logPrefix")
+                :reactContext.getPackageName();
+        
 
         configureLogger(dailyRolling, maximumFileSize, maximumNumberOfFiles, logsDirectory, logPrefix);
 
