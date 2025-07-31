@@ -18,33 +18,43 @@
 
 - (NSString *)newLogFileName
 {
-     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
-    NSString *timestamp = [formatter stringFromDate:[NSDate date]];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *dateString = [formatter stringFromDate:[NSDate date]];
+    
+    NSDateFormatter *timeFormatter = [[NSDateFormatter alloc] init];
+    [timeFormatter setDateFormat:@"HHmmss"];
+    NSString *timeString = [timeFormatter stringFromDate:[NSDate date]];
 
-    if (self.fileName && [self.fileName length]) {
-        return [NSString stringWithFormat:@"%@.log", self.fileName];
+    NSString *logPrefix = self.fileName;
+    if (!logPrefix || logPrefix.length == 0) {
+        logPrefix = [[NSBundle mainBundle] bundleIdentifier];
+        if (!logPrefix || logPrefix.length == 0) {
+            logPrefix = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+            if (!logPrefix || logPrefix.length == 0) {
+                logPrefix = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+            }
+        }
     }
-    NSString *appName = self.fileName;
-    if (!appName || appName.length == 0) {
-        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
-    }
-    if (!appName || appName.length == 0) {
-        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-    }
-    return [NSString stringWithFormat:@"%@_%@.log", appName, timestamp];
+    
+    return [NSString stringWithFormat:@"%@-%@-%@.log", logPrefix, dateString, timeString];
 }
 
 - (BOOL)isLogFile:(NSString *)fileName
 {
-    NSString *appName = self.fileName;
-    if (!appName || appName.length == 0) {
-        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+    NSString *logPrefix = self.fileName;
+    if (!logPrefix || logPrefix.length == 0) {
+        logPrefix = [[NSBundle mainBundle] bundleIdentifier];
+        if (!logPrefix || logPrefix.length == 0) {
+            logPrefix = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
+            if (!logPrefix || logPrefix.length == 0) {
+                logPrefix = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+            }
+        }
     }
-    if (!appName || appName.length == 0) {
-        appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-    }
-    return [fileName hasPrefix: appName];
+    
+    NSString *expectedPrefix = [NSString stringWithFormat:@"%@-", logPrefix];
+    return [fileName hasPrefix:expectedPrefix] && [fileName hasSuffix:@".log"];
 }
 
 @end
