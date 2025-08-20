@@ -70,10 +70,16 @@ class FileLoggerStatic {
 
 		if (captureConsole) {
 			this.enableConsoleCapture();
+		} else {
+			this.disableConsoleCapture();
 		}
 	}
 
 	enableConsoleCapture() {
+		if (this._originalConsole) {
+			return;
+		}
+
 		// Store original console methods
 		this._originalConsole = {
 			debug: console.debug,
