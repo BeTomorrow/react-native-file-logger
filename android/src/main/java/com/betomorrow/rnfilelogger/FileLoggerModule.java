@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ public class FileLoggerModule extends FileLoggerSpec {
     private static final int LOG_LEVEL_WARNING = 2;
     private static final int LOG_LEVEL_ERROR = 3;
 
+    private static LoggerContext fileLoggerContext;
     private static Logger logger = LoggerFactory.getLogger(FileLoggerModule.class);
 
     private final ReactApplicationContext reactContext;
@@ -60,27 +62,47 @@ public class FileLoggerModule extends FileLoggerSpec {
 
     @ReactMethod
     public void configure(ReadableMap options, Promise promise) {
-        boolean dailyRolling = options.getBoolean("dailyRolling");
-        int maximumFileSize = options.getInt("maximumFileSize");
-        int maximumNumberOfFiles = options.getInt("maximumNumberOfFiles");
-       
+        try {
+            boolean dailyRolling = options.getBoolean("dailyRolling");
+            int maximumFileSize = options.getInt("maximumFileSize");
+            int maximumNumberOfFiles = options.getInt("maximumNumberOfFiles");
 
-        logsDirectory = options.hasKey("logsDirectory")
-                ? options.getString("logsDirectory")
-                : reactContext.getExternalCacheDir() + "/logs";
-        String logPrefix = options.hasKey("logPrefix")
-                ? options.getString("logPrefix")
-                :reactContext.getPackageName();
-        
+            logsDirectory = options.hasKey("logsDirectory")
+                    ? options.getString("logsDirectory")
+                    : reactContext.getExternalCacheDir() + "/logs";
+            String logPrefix = options.hasKey("logPrefix")
+                    ? options.getString("logPrefix")
+                    : reactContext.getPackageName();
 
-        configureLogger(dailyRolling, maximumFileSize, maximumNumberOfFiles, logsDirectory, logPrefix);
+            configureLogger(dailyRolling, maximumFileSize, maximumNumberOfFiles, logsDirectory, logPrefix);
 
-        configureOptions = options;
-        promise.resolve(null);
+            configureOptions = options;
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject("ERR_FILE_LOGGER_CONFIGURE", e.getMessage(), e);
+        }
+    }
+
+    // Under SLF4J 1.x, LoggerFactory returns logback's LoggerContext directly.
+    // Under SLF4J 2.x, logback-android 2.0.0 only registers its 1.x binding and
+    // getILoggerFactory() returns a NOPLoggerFactory. In that case we fall back
+    // to a standalone LoggerContext (reused across reconfigures) so file
+    // logging still works.
+    private static LoggerContext getOrCreateLoggerContext() {
+        ILoggerFactory factory = LoggerFactory.getILoggerFactory();
+        if (factory instanceof LoggerContext) {
+            return (LoggerContext) factory;
+        }
+        if (fileLoggerContext != null) {
+            return fileLoggerContext;
+        }
+        LoggerContext context = new LoggerContext();
+        context.setName("FileLoggerContext");
+        return context;
     }
 
     public static void configureLogger(boolean dailyRolling, int maximumFileSize, int maximumNumberOfFiles, String logsDirectory, String logPrefix) {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        LoggerContext loggerContext = fileLoggerContext = getOrCreateLoggerContext();
 
         RollingFileAppender<ILoggingEvent> rollingFileAppender = new RollingFileAppender<>();
         rollingFileAppender.setContext(loggerContext);
@@ -125,10 +147,14 @@ public class FileLoggerModule extends FileLoggerSpec {
         rollingFileAppender.start();
 
         renewAppender(rollingFileAppender);
+
+        // Re-obtain the logger from our context so write() routes to the file
+        // appender even under SLF4J 2.x where the global facade is a NOP.
+        logger = loggerContext.getLogger(FileLoggerModule.class.getName());
     }
 
     private static void renewAppender(Appender appender) {
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        ch.qos.logback.classic.Logger root = fileLoggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.DEBUG);
         // Stopping the previous appender to release any resources it might be holding (file handles) and to ensure a clean shutdown.
         Appender previousFileLoggerAppender = root.getAppender(APPENDER_NAME);
